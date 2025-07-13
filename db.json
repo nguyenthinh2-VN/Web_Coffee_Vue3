@@ -1,0 +1,84 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "tendm": "Cà phê"
+    },
+    {
+      "id": 2,
+      "tendm": "Nước ép"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "tensp": "Cà phê sữa đá",
+      "gia": 25000,
+      "category_id": 1,
+      "hinh": "caphesua.png"
+    },
+    {
+      "id": 2,
+      "tensp": "Cà phê đen đá",
+      "gia": 20000,
+      "category_id": 1,
+      "hinh": "capheden.png"
+    },
+    {
+      "id": 3,
+      "tensp": "Cà phê trứng nóng",
+      "gia": 45000,
+      "category_id": 1,
+      "hinh": "caphetrung.png"
+    },
+    {
+      "id": 4,
+      "tensp": "Cà phê muối",
+      "gia": 30000,
+      "category_id": 1,
+      "hinh": "caphem.png"
+    },
+    {
+      "id": 5,
+      "tensp": "Cà phê Espresso",
+      "gia": 35000,
+      "category_id": 1,
+      "hinh": "caphespresso.png"
+    },
+    {
+      "id": 6,
+      "tensp": "Nước ép cam",
+      "gia": 40000,
+      "category_id": 2,
+      "hinh": "necam.png"
+    },
+    {
+      "id": 7,
+      "tensp": "Nước ép táo",
+      "gia": 38000,
+      "category_id": 2,
+      "hinh": "netao.png"
+    },
+    {
+      "id": 8,
+      "tensp": "Nước ép ổi",
+      "gia": 36000,
+      "category_id": 2,
+      "hinh": "neoi.png"
+    },
+    {
+      "id": 9,
+      "tensp": "Nước ép dứa",
+      "gia": 37000,
+      "category_id": 2,
+      "hinh": "nedua.png"
+    },
+    {
+      "id": 10,
+      "tensp": "Nước ép xoài",
+      "gia": 35000,
+      "category_id": 2,
+      "hinh": "nexoai.png"
+    }
+  ]
+}
