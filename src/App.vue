@@ -1,23 +1,27 @@
 
 <template>
-  <div class="app">
-    <HeaderCompo />
-    <main>
-      <router-view/>
-    </main>
-    <FooterCompo />
-  </div>
+  <n-message-provider>
+    <div class="app">
+      <HeaderCompo />
+      <main>
+        <router-view/>
+      </main>
+      <FooterCompo />
+    </div>
+  </n-message-provider>
 </template>
 
 <script>
 import HeaderCompo from '@/components/HeaderCompo.vue'
 import FooterCompo from '@/components/FooterCompo.vue'
+import { NMessageProvider } from 'naive-ui'
 
 export default {
   name: 'App',
   components: {
     HeaderCompo,
-    FooterCompo
+    FooterCompo,
+    NMessageProvider
   }
 }
 </script>

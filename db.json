@@ -6,7 +6,7 @@
     },
     {
       "id": 2,
-      "tendm": "Nước ép"
+      "tendm": "Trà"
     }
   ],
   "products": [
@@ -15,70 +15,174 @@
       "tensp": "Cà phê sữa đá",
       "gia": 25000,
       "category_id": 1,
-      "hinh": "caphesua.png"
+      "hinh": "https://files.catbox.moe/0xpnfw.png",
+      "mota": "Cà phê sữa đá là sự kết hợp hoàn hảo giữa hạt cà phê Robusta và Arabica thượng hạng được rang xay theo công nghệ và bí quyết riêng biệt, cho ra những tách cà phê sữa đá với hương vị đậm đà, hài hòa giữa vị ngọt đầu lưỡi và vị đắng thanh thoát nơi hậu vị."
     },
     {
       "id": 2,
       "tensp": "Cà phê đen đá",
       "gia": 20000,
       "category_id": 1,
-      "hinh": "capheden.png"
+      "hinh": "https://files.catbox.moe/r2sdqp.png",
+      "mota": "Không ngọt ngào như cà phê sữa đá, cà phê đen đá mang trong mình vị đắng đậm đà, thi vị hơn bởi người thưởng thức có thể cảm nhận được cả hương và vị của tách cà phê theo cách trọn vẹn nhất."
     },
     {
       "id": 3,
       "tensp": "Cà phê trứng nóng",
       "gia": 45000,
       "category_id": 1,
-      "hinh": "caphetrung.png"
+      "hinh": "https://files.catbox.moe/k7ywjx.png",
+      "mota": "Cà phê trứng là một thức uống độc đáo của Việt Nam, được tạo nên từ sự kết hợp giữa cà phê đen đậm đà và lớp kem trứng béo ngậy. Thức uống này mang đến trải nghiệm vị giác đặc biệt với độ béo vừa phải và hương vị cà phê thơm nồng."
     },
     {
       "id": 4,
       "tensp": "Cà phê muối",
       "gia": 30000,
       "category_id": 1,
-      "hinh": "caphem.png"
+      "hinh": "https://files.catbox.moe/53lg8t.png"
     },
     {
       "id": 5,
       "tensp": "Cà phê Espresso",
       "gia": 35000,
       "category_id": 1,
-      "hinh": "caphespresso.png"
+      "hinh": "https://files.catbox.moe/d11v2p.png"
     },
     {
       "id": 6,
-      "tensp": "Nước ép cam",
-      "gia": 40000,
-      "category_id": 2,
-      "hinh": "necam.png"
+      "tensp": "Latte Almond",
+      "gia": 59000,
+      "category_id": 1,
+      "hinh": "https://files.catbox.moe/5m1ltr.png"
     },
     {
       "id": 7,
-      "tensp": "Nước ép táo",
-      "gia": 38000,
-      "category_id": 2,
-      "hinh": "netao.png"
+      "tensp": "Latte Caramel",
+      "gia": 59000,
+      "category_id": 1,
+      "hinh": "https://files.catbox.moe/isn6wi.png"
     },
     {
       "id": 8,
-      "tensp": "Nước ép ổi",
-      "gia": 36000,
-      "category_id": 2,
-      "hinh": "neoi.png"
+      "tensp": "Latte Hazelnut",
+      "gia": 59000,
+      "category_id": 1,
+      "hinh": "https://files.catbox.moe/bgu6ln.png"
     },
     {
       "id": 9,
-      "tensp": "Nước ép dứa",
-      "gia": 37000,
-      "category_id": 2,
-      "hinh": "nedua.png"
+      "tensp": "Latte Coconut",
+      "gia": 59000,
+      "category_id": 1,
+      "hinh": "https://files.catbox.moe/izdmgg.png"
     },
     {
       "id": 10,
-      "tensp": "Nước ép xoài",
-      "gia": 35000,
+      "tensp": "Latte Bạc Xỉu",
+      "gia": 49000,
+      "category_id": 1,
+      "hinh": "https://files.catbox.moe/swrihi.png"
+    },
+    {
+      "id": 11,
+      "tensp": "Latte Classic",
+      "gia": 55000,
+      "category_id": 1,
+      "hinh": "https://files.catbox.moe/nypx9w.png"
+    },
+    {
+      "id": 12,
+      "tensp": "Trà Sữa Oolong Nướng Sương Sáo",
+      "gia": 55000,
       "category_id": 2,
-      "hinh": "nexoai.png"
+      "hinh": "https://files.catbox.moe/h7ad5w.png"
+    },
+    {
+      "id": 13,
+      "tensp": "Trà Sữa Oolong Tứ Quý Sương Sáo",
+      "gia": 55000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/vi4m1u.png"
+    },
+    {
+      "id": 14,
+      "tensp": "Hồng Trà Sữa Nóng",
+      "gia": 55000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/oejvv8.png"
+    },
+    {
+      "id": 15,
+      "tensp": "Hồng Trà Sữa Trân Châu",
+      "gia": 55000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/jggdzf.png"
+    },
+    {
+      "id": 16,
+      "tensp": "Trà Đen Macchiato",
+      "gia": 55000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/zuax88.png"
+    },
+    {
+      "id": 17,
+      "tensp": "Trà Sữa Oolong BLao",
+      "gia": 39000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/nly5t2.png"
+    },
+    {
+      "id": 18,
+      "tensp": "Hi-Tea Đào Kombucha",
+      "gia": 59000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/qo6dbo.png"
+    },
+    {
+      "id": 19,
+      "tensp": "Hi-Tea Yuzu Kombucha",
+      "gia": 59000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/zanqsv.png"
+    },
+    {
+      "id": 20,
+      "tensp": "Hi-Tea Yuzu Trân Châu",
+      "gia": 49000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/4rj6ue.png"
+    },
+    {
+      "id": 21,
+      "tensp": "Hi-Tea Vải",
+      "gia": 49000,
+      "category_id": 2, 
+      "hinh": "https://files.catbox.moe/o79y4a.png"
+    },
+    {
+      "id": 22,
+      "tensp": "Hi-Tea Đào",
+      "gia": 49000,
+      "category_id": 2,
+      "hinh": "https://files.catbox.moe/5dlruz.png"
+    }
+  ],
+  "sizes": [
+    {
+      "id": 1,
+      "tensize": "Nhỏ",
+      "gia": 0
+    },
+    {
+      "id": 2,
+      "tensize": "Vừa",
+      "gia": 5000
+    },
+    {
+      "id": 3,
+      "tensize": "Lớn",
+      "gia": 10000
     }
   ]
 }

@@ -7,8 +7,7 @@
     </p>
 
     <div class="filter-buttons">
-      <button><router-link to="/">Trang chủ</router-link></button>
-      <button>Blog</button>
+      <button><router-link to="/blog">Blog</router-link></button>
     </div>
 
     <div class="stories">

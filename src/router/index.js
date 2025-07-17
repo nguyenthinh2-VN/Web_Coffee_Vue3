@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/components/HomeCompo.vue';
 import About from '@/components/AboutCompo.vue';
-import MenuProduct from '@/components/menuProduct.vue'; // Import the new component
+import MenuProduct from '@/components/menuProduct.vue';
+import ProductDetail from '@/components/ProductDetail.vue';
+import BlogPage from '@/components/blogPage.vue';
 
 const routes = [
   {
@@ -15,9 +17,19 @@ const routes = [
     component: About
   },
   {
-    path: '/menu', // Or whatever path you prefer
+    path: '/blog',
+    name: 'Blog',
+    component: BlogPage
+  },
+  {
+    path: '/menu',
     name: 'MenuProduct',
     component: MenuProduct
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: ProductDetail
   }
 ];
 

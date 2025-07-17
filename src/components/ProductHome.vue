@@ -1,5 +1,5 @@
 <template>
-  <div class="card product-card">
+  <div class="card product-card" @click="navigateToProduct">
     <div class="product-image-container">
       <img :src="product.hinh" class="card-img-top" :alt="product.tensp" />
       <div v-if="product.badge" class="product-badge">
@@ -8,12 +8,14 @@
     </div>
     <div class="card-body product-info">
       <h3 class="card-title">{{ product.tensp }}</h3>
-      <p class="card-text product-price">{{ product.gia }} đ</p>
+      <p class="card-text product-price">{{ formatPrice(product.gia) }}</p>
     </div>
   </div>
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 export default {
   props: {
     product: {
@@ -21,6 +23,26 @@ export default {
       required: true,
     },
   },
+  setup(props) {
+    const router = useRouter();
+
+    const formatPrice = (price) => {
+      return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+      }).format(price).replace('₫', 'đ');
+    };
+
+    const navigateToProduct = () => {
+      console.log('Navigating to product:', props.product.id);
+      router.push(`/product/${props.product.id}`);
+    };
+
+    return {
+      formatPrice,
+      navigateToProduct
+    };
+  }
 };
 </script>
 
@@ -97,7 +119,8 @@ export default {
 .product-price {
   margin: 0;
   font-size: 15px;
-  color: gray;
+  color: #ff6b00;
+  font-weight: 550;
 }
 
 /* Responsive adjustments */
