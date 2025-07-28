@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import ProductHome from './ProductHome.vue';
 import MenuBar from './MenuBar.vue';
@@ -68,19 +68,6 @@ export default {
 
     const handleCategorySelect = (categoryId) => {
       selectedCategory.value = categoryId;
-      nextTick(() => {
-        const categoryProducts = document.querySelectorAll(`[data-category="${categoryId}"]`);
-        if (categoryProducts.length > 0) {
-          const headerOffset = 130; // 80px header height + 50px margin
-          const elementPosition = categoryProducts[0].getBoundingClientRect().top;
-          const offsetPosition = elementPosition - headerOffset;
-
-          window.scrollBy({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }
-      });
     };
 
     onMounted(() => {

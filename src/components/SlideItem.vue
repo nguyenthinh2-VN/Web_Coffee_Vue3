@@ -65,6 +65,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .mySwiper {
   padding: 10px 5px;

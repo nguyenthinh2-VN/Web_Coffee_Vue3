@@ -63,11 +63,10 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
-import { getApiUrl, API_ENDPOINTS } from './../api.js';
 import SlideItem from './SlideItem.vue';
 import { NIcon } from 'naive-ui';
 import { useRoute } from 'vue-router';
+import { useProductStore } from '../stores/productStore.js';
 import {
   CafeOutline,
   BeerOutline,
@@ -86,25 +85,15 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const product = ref(null);
-    const sizes = ref([]);
+    const productStore = useProductStore();
     const selectedSize = ref(null);
-    const relatedProducts = ref([]);
 
     // Tính tổng giá tiền (giá gốc + giá size)
     const totalPrice = computed(() => {
-      const basePrice = product.value?.gia || 0;
+      const basePrice = productStore.currentProduct?.gia || 0;
       const sizePrice = selectedSize.value?.gia || 0;
       return basePrice + sizePrice;
     });
-
-    // Format giá tiền
-    const formatPrice = (price) => {
-      return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-      }).format(price).replace('₫', 'đ');
-    };
 
     // Chọn size
     const selectSize = (size) => {
@@ -122,27 +111,13 @@ export default {
           return;
         }
 
-        // Fetch product details
-        const productResponse = await axios.get(getApiUrl(API_ENDPOINTS.PRODUCTS) + '/' + productId);
-        product.value = productResponse.data;
-        console.log('Product data:', product.value);
-
-        if (!product.value) {
-          console.error('Product not found');
-          return;
+        // Use store actions to fetch data
+        await productStore.fetchProductById(productId);
+        await productStore.fetchSizes();
+        
+        if (productStore.currentProduct) {
+          await productStore.fetchRelatedProducts(productStore.currentProduct.category_id);
         }
-
-        // Fetch sizes
-        const sizesResponse = await axios.get(getApiUrl(API_ENDPOINTS.SIZES));
-        sizes.value = sizesResponse.data;
-        console.log('Sizes data:', sizes.value);
-
-        // Fetch related products (same category)
-        const relatedResponse = await axios.get(
-          `${getApiUrl(API_ENDPOINTS.PRODUCTS)}?category_id=${product.value.category_id}`
-        );
-        relatedProducts.value = relatedResponse.data.filter(p => p.id !== parseInt(productId));
-        console.log('Related products:', relatedProducts.value);
       } catch (error) {
         console.error('Error fetching product details:', error);
       }
@@ -154,12 +129,17 @@ export default {
     });
 
     return {
-      product,
-      sizes,
+      // Store state
+      product: productStore.currentProduct,
+      sizes: productStore.sizes,
+      relatedProducts: productStore.relatedProducts,
+      loading: productStore.currentProductLoading,
+      error: productStore.error,
+      // Store actions
+      formatPrice: productStore.formatPrice,
+      // Local state and methods
       selectedSize,
-      relatedProducts,
       totalPrice,
-      formatPrice,
       selectSize
     };
   }

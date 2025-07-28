@@ -4,6 +4,7 @@
     <n-menu
       v-if="!isMobileView"
       :options="menuOptions"
+      :value="currentSelectedKey"
       @update:value="handleUpdateValue"
     />
     
@@ -28,8 +29,7 @@ import {
 import { NIcon, useMessage, NSelect } from "naive-ui";
 import { defineComponent, h, ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import axios from 'axios';
-import { getApiUrl, API_ENDPOINTS } from './../api.js';
+import { useProductStore } from '../stores/productStore.js';
 
 function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) });
@@ -42,7 +42,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const message = useMessage();
     const router = useRouter();
-    const categories = ref([]);
+    const productStore = useProductStore();
     const selectedValue = ref(null);
     const isMobileView = ref(false);
 
@@ -69,6 +69,14 @@ export default defineComponent({
       }
     ]);
 
+    // Computed property to get current selected menu key
+    const currentSelectedKey = computed(() => {
+      if (productStore.selectedCategory) {
+        return `category-${productStore.selectedCategory}`;
+      }
+      return null;
+    });
+
     // Select options cho mobile view
     const selectOptions = computed(() => {
       const options = [
@@ -79,26 +87,26 @@ export default defineComponent({
       ];
 
       return options.concat(
-        categories.value.map(category => ({
+        productStore.categories.map(category => ({
           label: category.tendm,
           value: `category-${category.id}`
         }))
       );
     });
 
-    const fetchCategories = async () => {
+    const initializeMenuBar = async () => {
       try {
-        const response = await axios.get(getApiUrl(API_ENDPOINTS.CATEGORIES));
-        categories.value = response.data;
+        // Use the optimized store initialization
+        await productStore.initializeStore();
         generateMenuOptions();
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error initializing MenuBar:', error);
         message.error('Không thể tải danh mục sản phẩm');
       }
     };
 
     const generateMenuOptions = () => {
-      const categoryOptions = categories.value.map(category => ({
+      const categoryOptions = productStore.categories.map(category => ({
         label: category.tendm,
         key: `category-${category.id}`,
         icon: renderIcon(category.id === 1 ? CafeIcon : TeaIcon)
@@ -113,15 +121,28 @@ export default defineComponent({
     const handleUpdateValue = (key) => {
       selectedValue.value = key;
       if (key === 'go-back-home') {
+        // Reset category filter and go to home
+        productStore.setSelectedCategory(null);
         router.push('/');
       } else if (key && key.startsWith('category-')) {
         const categoryId = parseInt(key.split('-')[1]);
+        console.log('Selected category ID:', categoryId);
+        
+        // Set the selected category in the store to filter products
+        productStore.setSelectedCategory(categoryId);
+        
+        // Also emit the event for any parent components that might need it
         emit('category-selected', categoryId);
+        
+        // Navigate to menu page if not already there
+        if (router.currentRoute.value.path !== '/menu') {
+          router.push('/menu');
+        }
       }
     };
 
     onMounted(() => {
-      fetchCategories();
+      initializeMenuBar();
       checkMobileView();
       window.addEventListener('resize', checkMobileView);
     });
@@ -131,7 +152,12 @@ export default defineComponent({
       selectOptions,
       selectedValue,
       isMobileView,
-      handleUpdateValue
+      handleUpdateValue,
+      currentSelectedKey,
+      // Store state
+      categories: productStore.categories,
+      selectedCategory: productStore.selectedCategory,
+      categoriesLoading: productStore.categoriesLoading
     };
   }
 });
