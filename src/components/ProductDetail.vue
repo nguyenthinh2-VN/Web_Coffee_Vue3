@@ -38,7 +38,7 @@
         </div>
 
         <!-- Order Button -->
-        <button class="order-button">
+        <button class="order-button" @click="addToCart">
           <n-icon size="20">
             <cart-outline />
           </n-icon>
@@ -62,11 +62,12 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import SlideItem from './SlideItem.vue';
 import { NIcon } from 'naive-ui';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '../stores/productStore.js';
+import { useCartStore } from '../stores/cart.js';
 import {
   CafeOutline,
   BeerOutline,
@@ -86,8 +87,8 @@ export default {
   setup() {
     const route = useRoute();
     const productStore = useProductStore();
+    const cartStore = useCartStore();
     const selectedSize = ref(null);
-
     // Tính tổng giá tiền (giá gốc + giá size)
     const totalPrice = computed(() => {
       const basePrice = productStore.currentProduct?.gia || 0;
@@ -99,6 +100,25 @@ export default {
     const selectSize = (size) => {
       selectedSize.value = size;
     };
+
+    // Hàm thêm vào giỏ hàng
+    const addToCart = () => {
+      if (!productStore.currentProduct || !selectedSize.value) {
+        alert('Vui lòng chọn size trước khi thêm vào giỏ hàng!');
+        return;
+      }
+
+      cartStore.addToCart({
+        id: productStore.currentProduct.id,
+        name: productStore.currentProduct.ten,
+        image: productStore.currentProduct.hinh,
+        size: selectedSize.value.ten,
+        price: totalPrice.value,
+        quantity: 1
+      });
+      alert('✅ Đã thêm sản phẩm vào giỏ hàng!');
+    };
+
 
     // Fetch data
     const fetchData = async () => {
@@ -123,24 +143,37 @@ export default {
       }
     };
 
+    // Watch for route changes
+    watch(
+      () => route.params.id,
+      (newId, oldId) => {
+        if (newId && newId !== oldId) {
+          console.log('Route ID changed from', oldId, 'to', newId);
+          selectedSize.value = null; // Reset selected size
+          fetchData();
+        }
+      },
+      { immediate: true } // Gọi ngay lần đầu khi component mount
+    );
+
     onMounted(() => {
       console.log('Component mounted with route params:', route.params);
-      fetchData();
     });
 
     return {
-      // Store state
-      product: productStore.currentProduct,
-      sizes: productStore.sizes,
-      relatedProducts: productStore.relatedProducts,
-      loading: productStore.currentProductLoading,
-      error: productStore.error,
+      // Store state - using computed for reactivity
+      product: computed(() => productStore.currentProduct),
+      sizes: computed(() => productStore.sizes),
+      relatedProducts: computed(() => productStore.relatedProducts),
+      loading: computed(() => productStore.currentProductLoading),
+      error: computed(() => productStore.error),
       // Store actions
       formatPrice: productStore.formatPrice,
       // Local state and methods
       selectedSize,
       totalPrice,
-      selectSize
+      selectSize,
+      addToCart // Đã expose hàm ra template
     };
   }
 };

@@ -5,6 +5,7 @@
       <HeaderCompo />
       <main>
         <router-view/>
+        <CartModal />
       </main>
       <FooterCompo />
     </div>
@@ -14,6 +15,7 @@
 <script>
 import HeaderCompo from '@/components/HeaderCompo.vue'
 import FooterCompo from '@/components/FooterCompo.vue'
+import CartModal from '@/components/CartModal.vue'
 import { NMessageProvider } from 'naive-ui'
 
 export default {
@@ -21,6 +23,7 @@ export default {
   components: {
     HeaderCompo,
     FooterCompo,
+    CartModal,
     NMessageProvider
   }
 }

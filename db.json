@@ -12,41 +12,38 @@
   "products": [
     {
       "id": 1,
-      "tensp": "Cà phê sữa đá",
-      "gia": 25000,
+      "tensp": "Đường Đen Sữa Đá",
+      "gia": 49000,
       "category_id": 1,
-      "hinh": "https://files.catbox.moe/0xpnfw.png",
-      "mota": "Cà phê sữa đá là sự kết hợp hoàn hảo giữa hạt cà phê Robusta và Arabica thượng hạng được rang xay theo công nghệ và bí quyết riêng biệt, cho ra những tách cà phê sữa đá với hương vị đậm đà, hài hòa giữa vị ngọt đầu lưỡi và vị đắng thanh thoát nơi hậu vị."
+      "hinh": "https://product.hstatic.net/1000075078/product/1737357048_uong-den-sua-da_5876b3829fe94af788996ca234a7894f_large.png"
     },
     {
       "id": 2,
-      "tensp": "Cà phê đen đá",
+      "tensp": "Bạc Xĩu",
       "gia": 20000,
       "category_id": 1,
-      "hinh": "https://files.catbox.moe/r2sdqp.png",
-      "mota": "Không ngọt ngào như cà phê sữa đá, cà phê đen đá mang trong mình vị đắng đậm đà, thi vị hơn bởi người thưởng thức có thể cảm nhận được cả hương và vị của tách cà phê theo cách trọn vẹn nhất."
+      "hinh": "https://product.hstatic.net/1000075078/product/1737357020_bac-xiu-da_43a593b61b8e44379111a9ebb00904d9_large.png"
     },
     {
       "id": 3,
-      "tensp": "Cà phê trứng nóng",
-      "gia": 45000,
+      "tensp": "The Coffee House Sữa Đá",
+      "gia": 39000,
       "category_id": 1,
-      "hinh": "https://files.catbox.moe/k7ywjx.png",
-      "mota": "Cà phê trứng là một thức uống độc đáo của Việt Nam, được tạo nên từ sự kết hợp giữa cà phê đen đậm đà và lớp kem trứng béo ngậy. Thức uống này mang đến trải nghiệm vị giác đặc biệt với độ béo vừa phải và hương vị cà phê thơm nồng."
+      "hinh": "https://product.hstatic.net/1000075078/product/1737357037_tch-sua-da_a83639744db94a7a96c1fd6b08e023e1_large.png"
     },
     {
       "id": 4,
-      "tensp": "Cà phê muối",
-      "gia": 30000,
+      "tensp": "Bạc Xỉu Nóng",
+      "gia": 39000,
       "category_id": 1,
-      "hinh": "https://files.catbox.moe/53lg8t.png"
+      "hinh": "https://product.hstatic.net/1000075078/product/1737357029_bac-xiu-nong_e0a0732dee144dfda4e3cb43949ce065_large.png"
     },
     {
       "id": 5,
-      "tensp": "Cà phê Espresso",
+      "tensp": "Cà Phê Đen Nóng",
       "gia": 35000,
       "category_id": 1,
-      "hinh": "https://files.catbox.moe/d11v2p.png"
+      "hinh": "https://product.hstatic.net/1000075078/product/1737356979_cf-den-nong_3ce91ffbdc04405b93855cd3b5d5aec2_large.png"
     },
     {
       "id": 6,
@@ -171,17 +168,17 @@
   "sizes": [
     {
       "id": 1,
-      "tensize": "Nhỏ",
+      "tensize": "S",
       "gia": 0
     },
     {
       "id": 2,
-      "tensize": "Vừa",
+      "tensize": "M",
       "gia": 5000
     },
     {
       "id": 3,
-      "tensize": "Lớn",
+      "tensize": "L",
       "gia": 10000
     }
   ]
