@@ -63,7 +63,7 @@
 -   `npm run preview`: Xem trước bản build production.
 
 ## 🤝 Đóng góp
-
+Lê Quốc Anh, Lý Tấn Tài.
 Nếu bạn muốn đóng góp cho dự án, vui lòng fork repository và tạo một Pull Request. Mọi đóng góp đều được chào đón!
 
 ## 📄 Giấy phép
