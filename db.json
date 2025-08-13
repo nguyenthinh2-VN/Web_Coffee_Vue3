@@ -1,4 +1,48 @@
 {
+  "users": [
+    {
+      "id": 1,
+      "email": "user@example.com",
+      "password": "hashedpassword123",
+      "name": "John Doe"
+    },
+    {
+      "id": 2,
+      "email": "alice@gmail.com",
+      "password": "hashedpassword456",
+      "name": "Alice Nguyen"
+    },
+    {
+      "id": 3,
+      "email": "bob@yahoo.com",
+      "password": "hashedpassword789",
+      "name": "Bob Tran"
+    },
+    {
+      "id": 4,
+      "email": "charlie@hotmail.com",
+      "password": "hashedpassword321",
+      "name": "Charlie Le"
+    },
+    {
+      "id": 5,
+      "email": "daisy@company.com",
+      "password": "hashedpassword654",
+      "name": "Daisy Pham"
+    },
+    {
+      "id": 6,
+      "email": "user@example.com",
+      "password": "hashedpassword123",
+      "name": "John Doe"
+    },
+    {
+      "name": "Nguyễn Thịnh",
+      "email": "nhokkinh2301@gmail.com",
+      "password": "123",
+      "id": 7
+    }
+  ],
   "categories": [
     {
       "id": 1,
@@ -154,7 +198,7 @@
       "id": 21,
       "tensp": "Hi-Tea Vải",
       "gia": 49000,
-      "category_id": 2, 
+      "category_id": 2,
       "hinh": "https://files.catbox.moe/o79y4a.png"
     },
     {
@@ -180,6 +224,209 @@
       "id": 3,
       "tensize": "L",
       "gia": 10000
+    }
+  ],
+  "toppings": [
+    {
+      "id": 1,
+      "tentopping": "Chân trâu đen",
+      "gia": 5000
+    },
+    {
+      "id": 2,
+      "tentopping": "Chân hoàng kim",
+      "gia": 5000
+    },
+    {
+      "id": 3,
+      "tentopping": "Chân trâu đường đen",
+      "gia": 7000
+    },
+    {
+      "id": 4,
+      "tentopping": "Chân trâu phô mai",
+      "gia": 10000
+    },
+    {
+      "id": 10,
+      "tentopping": "Full topping ",
+      "gia": 35000
+    }
+  ],
+  "ice_options": [
+    {
+      "id": 1,
+      "tenice": "Ít đá"
+    },
+    {
+      "id": 2,
+      "tenice": "Nhiều đá"
+    },
+    {
+      "id": 3,
+      "tenice": "Nóng"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "userId": 1,
+      "userEmail": "user@example.com",
+      "userName": "John Doe",
+      "customerInfo": {
+        "name": "John Doe",
+        "phone": "0123456789",
+        "address": "123 Đường ABC, Quận 1, TP.HCM"
+      },
+      "items": [
+        {
+          "id": 1,
+          "name": "Cà phê Đen",
+          "image": "https://example.com/image.jpg",
+          "size": "Vừa",
+          "toppings": [],
+          "ice": "Ít đá",
+          "price": 25000,
+          "quantity": 2
+        }
+      ],
+      "totalAmount": 50000,
+      "paymentMethod": "VietQR",
+      "status": "completed",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "notes": "Giao hàng nhanh"
+    },
+    {
+      "userId": 310770,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "customerInfo": {
+        "name": "Nguyễn Đức Thịnh",
+        "phone": "12345678910",
+        "address": "Hóc Môn, HCM"
+      },
+      "items": [
+        {
+          "id": 4,
+          "name": "Bạc Xỉu Nóng",
+          "image": "https://product.hstatic.net/1000075078/product/1737357029_bac-xiu-nong_e0a0732dee144dfda4e3cb43949ce065_large.png",
+          "size": "Vừa",
+          "toppings": [],
+          "ice": "Ít đá",
+          "price": 39000,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 64000,
+      "paymentMethod": "VietQR",
+      "status": "completed",
+      "createdAt": "2025-08-11T03:18:23.764Z",
+      "notes": "",
+      "completedAt": "2025-08-11T03:18:24.894Z",
+      "id": 2
+    },
+    {
+      "userId": 415315,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "customerInfo": {
+        "name": "Nguyễn Đức Thịnh",
+        "phone": "12345678910",
+        "address": "áđá"
+      },
+      "items": [
+        {
+          "id": 4,
+          "name": "Bạc Xỉu Nóng",
+          "image": "https://product.hstatic.net/1000075078/product/1737357029_bac-xiu-nong_e0a0732dee144dfda4e3cb43949ce065_large.png",
+          "size": "Vừa",
+          "toppings": [],
+          "ice": "Ít đá",
+          "price": 39000,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 64000,
+      "paymentMethod": "VietQR",
+      "status": "completed",
+      "createdAt": "2025-08-11T03:19:06.204Z",
+      "notes": "",
+      "completedAt": "2025-08-11T03:19:07.409Z",
+      "id": 3
+    }
+  ],
+  "ratings": [
+    {
+      "id": 1,
+      "productId": 1,
+      "userId": 7,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 5,
+      "createdAt": "2025-08-11T03:20:00.000Z"
+    },
+    {
+      "productId": 1,
+      "userId": 273462,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 5,
+      "createdAt": "2025-08-11T03:48:35.100Z",
+      "id": 2
+    },
+    {
+      "productId": 1,
+      "userId": 32307,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 5,
+      "createdAt": "2025-08-11T03:49:16.053Z",
+      "id": 3
+    },
+    {
+      "productId": 7,
+      "userId": 680257,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 5,
+      "createdAt": "2025-08-11T03:50:33.372Z",
+      "id": 4
+    },
+    {
+      "productId": 3,
+      "userId": 756786,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 2,
+      "createdAt": "2025-08-11T03:53:42.388Z",
+      "id": 5
+    },
+    {
+      "productId": 22,
+      "userId": 877590,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 4,
+      "createdAt": "2025-08-11T03:59:15.476Z",
+      "id": 6
+    },
+{
+      "productId": 22,
+      "userId": 877590,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 5,
+      "createdAt": "2025-08-11T03:59:15.476Z",
+      "id": 6
+    },
+{
+      "productId": 22,
+      "userId": 877590,
+      "userEmail": "nhokkinh2301@gmail.com",
+      "userName": "Nguyễn Thịnh",
+      "rating": 4,
+      "createdAt": "2025-08-11T03:59:15.476Z",
+      "id": 6
     }
   ]
 }

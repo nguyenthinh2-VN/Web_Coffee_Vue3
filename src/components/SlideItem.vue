@@ -108,8 +108,8 @@ export default {
 }
 
 .slide-product-info h3 {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   margin: 0 0 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,19 +119,18 @@ export default {
 }
 
 .slide-product-info p {
-  font-size: 13px;
-  color: #ff6b00;
-  margin: 0;
-  font-weight: 600;
+  font-size: 14px;
+  color: #00000099;
+  margin: 5px 0;
 }
 
 @media (max-width: 768px) {
   .slide-product-info h3 {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .slide-product-info p {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .slide-product-info {

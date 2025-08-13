@@ -3,6 +3,17 @@
     <MenuBar @category-selected="handleCategorySelect" class="menu-section" />
     
     <div class="product-section">
+      <!-- Ghi chú: Thêm logic tìm kiếm và sắp xếp tại đây - Các component UI đã được thêm để triển khai sau -->
+      <!-- Search and Sort UI Section -->
+      <div class="search-sort-container">
+        
+        <!-- Sort button - Left side -->
+        <SortBar />
+        
+        <!-- Search box - Right side -->
+        <SearchBar />
+      </div>
+
       <div v-if="loading" class="loading-container">
         <div class="loading-spinner">Đang tải sản phẩm...</div>
       </div>
@@ -15,7 +26,7 @@
       <div v-else class="product-list-grid container">
         <div class="row g-3">
           <div
-            v-for="product in filteredProducts"
+            v-for="product in paginatedProducts"
             :key="product.id"
             class="col-6 col-md-3 d-flex align-items-stretch Product-Card"
             :data-category="product.category_id"
@@ -23,65 +34,59 @@
             <ProductHome :product="product" />
           </div>
         </div>
+        <!-- Pagination component -->
+        <Pagination />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import { onMounted, computed } from 'vue';
 import ProductHome from './ProductHome.vue';
 import MenuBar from './MenuBar.vue';
-import { getApiUrl, API_ENDPOINTS } from './../api.js';
+import SearchBar from './SearchBar.vue';
+import SortBar from './SortBar.vue';
+import Pagination from './Pagination.vue';
+import { useMenuStore } from '../stores/menuStore.js';
 
 export default {
   components: {
     ProductHome,
-    MenuBar
+    MenuBar,
+    SearchBar,
+    SortBar,
+    Pagination
   },
   setup() {
-    const products = ref([]);
-    const loading = ref(false);
-    const error = ref(null);
-    const selectedCategory = ref(null);
-
-    const filteredProducts = computed(() => {
-      if (!selectedCategory.value) return products.value;
-      return products.value.filter(product => product.category_id === selectedCategory.value);
-    });
-
-    const fetchProducts = async () => {
-      try {
-        loading.value = true;
-        error.value = null;
-        const response = await axios.get(getApiUrl(API_ENDPOINTS.PRODUCTS));
-        products.value = response.data;
-        console.log('Fetched products for menu:', products.value);
-      } catch (err) {
-        error.value = 'Không thể tải sản phẩm. Vui lòng thử lại.';
-        console.error('Error fetching products for menu:', err);
-      } finally {
-        loading.value = false;
-      }
-    };
+    // Use the menu store
+    const menuStore = useMenuStore();
 
     const handleCategorySelect = (categoryId) => {
-      selectedCategory.value = categoryId;
+      menuStore.setSelectedCategory(categoryId);
     };
 
-    onMounted(() => {
-      fetchProducts();
+    // Initialize the store when component mounts
+    onMounted(async () => {
+      try {
+        await menuStore.initializeStore();
+      } catch (error) {
+        console.error('Error initializing menu store:', error);
+      }
     });
 
     return {
-      products,
-      loading,
-      error,
-      fetchProducts,
-      selectedCategory,
-      filteredProducts,
-      handleCategorySelect
+      // Store state and computed properties (wrapped in computed for reactivity)
+      loading: computed(() => menuStore.loading),
+      error: computed(() => menuStore.error),
+      paginatedProducts: computed(() => menuStore.paginatedProducts),
+      filteredProducts: computed(() => menuStore.filteredProducts),
+      
+      // Store actions
+      handleCategorySelect,
+      
+      // For retry functionality
+      fetchProducts: menuStore.initializeStore
     };
   },
 };
@@ -105,6 +110,77 @@ export default {
   margin-top: 50px;
 }
 
+
+/* Ghi chú: Thêm chức năng tìm kiếm và sắp xếp sau */
+/* Styles cho UI Tìm kiếm và Sắp xếp - Ghi chú: Thêm chức năng tương tác sau */
+.search-sort-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  margin-left: 170px; /* Align with product grid margin */
+}
+
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 170px; /* Align with product grid margin */
+}
+
+.search-input {
+  width: 250px;
+  height: 38px;
+  border: 1px solid #ddd;
+  border-radius: 6px 0 0 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.search-btn {
+  height: 38px;
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.sort-container {
+  display: flex;
+  align-items: center;
+}
+
+.sort-btn {
+  height: 38px;
+  width: 38px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.sort-btn:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
   .menu-product-container {
@@ -125,6 +201,28 @@ export default {
     padding: 20px;
     padding-left: 20px;
     margin-top: 30px;
+  }
+
+  /* Mobile responsive styles for search and sort */
+  .search-sort-container {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    margin-left: 0 !important; /* Remove desktop margins on mobile */
+  }
+
+  .search-box {
+    justify-content: center;
+    margin-right: 0 !important; /* Remove desktop margins on mobile */
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .sort-container {
+    justify-content: center;
   }
 
   .product-list-grid .row {

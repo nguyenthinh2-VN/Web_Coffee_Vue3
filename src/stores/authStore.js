@@ -4,10 +4,11 @@ import { getApiUrl, API_ENDPOINTS } from '@/api';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    isLoggedIn: false,
+    // Ghi chú: Khởi tạo trạng thái từ localStorage để giữ đăng nhập sau khi refresh
+    isLoggedIn: !!localStorage.getItem('authToken'),
     returnUrl: null,
-    userEmail: null,
-    userName: null,
+    userEmail: localStorage.getItem('userEmail') || null,
+    userName: localStorage.getItem('userName') || null,
   }),
   actions: {
     async login(email, password) {
@@ -87,14 +88,33 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     logout() {
-      console.log('authStore.logout called');
-      this.isLoggedIn = false;
-      this.userEmail = null;
-      this.userName = null;
-      this.returnUrl = null;
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('userName');
+      console.log('authStore.logout called')
+      this.isLoggedIn = false
+      this.userEmail = null
+      this.userName = null
+      this.returnUrl = null
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('userEmail')
+      localStorage.removeItem('userName')
     },
+    
+    // Ghi chú: Kiểm tra và khởi tạo trạng thái đăng nhập
+    initializeAuth() {
+      const token = localStorage.getItem('authToken')
+      const userEmail = localStorage.getItem('userEmail')
+      const userName = localStorage.getItem('userName')
+      
+      if (token && userEmail && userName) {
+        this.isLoggedIn = true
+        this.userEmail = userEmail
+        this.userName = userName
+        console.log('Auth state initialized from localStorage:', { userEmail, userName })
+      } else {
+        this.isLoggedIn = false
+        this.userEmail = null
+        this.userName = null
+        console.log('No valid auth data in localStorage')
+      }
+    }
   },
 });

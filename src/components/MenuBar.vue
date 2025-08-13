@@ -66,6 +66,11 @@ export default defineComponent({
             marginLeft: "32px"
           }
         }
+      },
+      {
+        label: "Tất cả",
+        key: "all-products",
+        icon: renderIcon(CafeIcon) // Ghi chú: Sử dụng icon phù hợp cho "Tất cả sản phẩm"
       }
     ]);
 
@@ -73,6 +78,10 @@ export default defineComponent({
     const currentSelectedKey = computed(() => {
       if (productStore.selectedCategory) {
         return `category-${productStore.selectedCategory}`;
+      }
+      // Ghi chú: Kiểm tra nếu đang hiển thị tất cả sản phẩm (không lọc danh mục)
+      if (productStore.selectedCategory === null && router.currentRoute.value.path === '/menu') {
+        return 'all-products';
       }
       return null;
     });
@@ -83,6 +92,10 @@ export default defineComponent({
         {
           label: "Trang chủ",
           value: "go-back-home"
+        },
+        {
+          label: "Tất cả",
+          value: "all-products" // Ghi chú: Tùy chọn hiển thị tất cả sản phẩm
         }
       ];
 
@@ -113,7 +126,7 @@ export default defineComponent({
       }));
 
       menuOptions.value = [
-        ...menuOptions.value.slice(0, 2),
+        ...menuOptions.value.slice(0, 3), // Include "Tất cả" option
         ...categoryOptions
       ];
     };
@@ -124,6 +137,20 @@ export default defineComponent({
         // Reset category filter and go to home
         productStore.setSelectedCategory(null);
         router.push('/');
+      } else if (key === 'all-products') {
+        // Ghi chú: Hiển thị tất cả sản phẩm (xóa bộ lọc danh mục)
+        console.log('Selected: Show all products');
+        
+        // Clear category filter to show all products
+        productStore.setSelectedCategory(null);
+        
+        // Emit event with null to show all products
+        emit('category-selected', null);
+        
+        // Navigate to menu page if not already there
+        if (router.currentRoute.value.path !== '/menu') {
+          router.push('/menu');
+        }
       } else if (key && key.startsWith('category-')) {
         const categoryId = parseInt(key.split('-')[1]);
         console.log('Selected category ID:', categoryId);

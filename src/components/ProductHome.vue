@@ -105,7 +105,7 @@ export default {
 }
 
 .product-info h3 {
-  margin: 0 0 8px 0;
+  margin: 0 10px;
   font-size: 16px;
   font-weight: 600;
   color: #333;
@@ -118,10 +118,9 @@ export default {
 }
 
 .product-price {
-  margin: 0;
+  margin: 7px 10px;
   font-size: 15px;
-  color: #ff6b00;
-  font-weight: 550;
+  color: #00000099;
 }
 
 /* Responsive adjustments */

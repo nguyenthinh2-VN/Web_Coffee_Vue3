@@ -10,12 +10,16 @@ export const useProductStore = defineStore('product', () => {
   const currentProduct = ref(null)
   const sizes = ref([])
   const relatedProducts = ref([])
+  const toppings = ref([]) // Ghi chú: Lưu trữ dữ liệu topping
+  const iceOptions = ref([]) // Ghi chú: Lưu trữ dữ liệu tùy chọn đá
   
   // Separate loading states
   const productsLoading = ref(false)
   const categoriesLoading = ref(false)
   const currentProductLoading = ref(false)
   const sizesLoading = ref(false)
+  const toppingsLoading = ref(false)
+  const iceOptionsLoading = ref(false)
   
   const error = ref(null)
   const selectedCategory = ref(null)
@@ -107,6 +111,52 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  const fetchToppings = async () => {
+    // Don't fetch if already loaded
+    if (toppings.value.length > 0) {
+      console.log('Toppings already loaded:', toppings.value)
+      return toppings.value
+    }
+    
+    try {
+      toppingsLoading.value = true
+      error.value = null
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.TOPPINGS)) // Ghi chú: Lấy dữ liệu topping từ db.json
+      toppings.value = response.data
+      console.log('Fetched toppings:', toppings.value)
+      return toppings.value
+    } catch (err) {
+      error.value = 'Không thể tải toppings. Vui lòng thử lại.'
+      console.error('Error fetching toppings:', err)
+      throw err
+    } finally {
+      toppingsLoading.value = false
+    }
+  }
+
+  const fetchIceOptions = async () => {
+    // Don't fetch if already loaded
+    if (iceOptions.value.length > 0) {
+      console.log('Ice options already loaded:', iceOptions.value)
+      return iceOptions.value
+    }
+    
+    try {
+      iceOptionsLoading.value = true
+      error.value = null
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.ICE_OPTIONS)) // Ghi chú: Lấy dữ liệu tùy chọn đá từ db.json
+      iceOptions.value = response.data
+      console.log('Fetched ice options:', iceOptions.value)
+      return iceOptions.value
+    } catch (err) {
+      error.value = 'Không thể tải ice options. Vui lòng thử lại.'
+      console.error('Error fetching ice options:', err)
+      throw err
+    } finally {
+      iceOptionsLoading.value = false
+    }
+  }
+
   const fetchProductById = async (productId) => {
     try {
       currentProductLoading.value = true
@@ -178,11 +228,13 @@ export const useProductStore = defineStore('product', () => {
   // Initialize function to load all necessary data
   const initializeStore = async () => {
     try {
-      // Load categories and products in parallel for better performance
+      // Load categories, products, sizes, toppings, and ice options in parallel for better performance
       await Promise.all([
         fetchCategories(),
         fetchProducts(),
-        fetchSizes()
+        fetchSizes(),
+        fetchToppings(), // Ghi chú: Tải dữ liệu topping
+        fetchIceOptions() // Ghi chú: Tải dữ liệu tùy chọn đá
       ])
       console.log('Store initialized successfully')
     } catch (error) {
@@ -205,6 +257,8 @@ export const useProductStore = defineStore('product', () => {
     currentProduct,
     sizes,
     relatedProducts,
+    toppings, // Ghi chú: Expose state topping
+    iceOptions, // Ghi chú: Expose state tùy chọn đá
     error,
     selectedCategory,
     
@@ -213,6 +267,8 @@ export const useProductStore = defineStore('product', () => {
     categoriesLoading,
     currentProductLoading,
     sizesLoading,
+    toppingsLoading,
+    iceOptionsLoading,
     
     // Getters
     filteredProducts,
@@ -223,6 +279,8 @@ export const useProductStore = defineStore('product', () => {
     fetchProducts,
     fetchProductById,
     fetchSizes,
+    fetchToppings, // Ghi chú: Expose action lấy dữ liệu topping
+    fetchIceOptions, // Ghi chú: Expose action lấy dữ liệu tùy chọn đá
     fetchRelatedProducts,
     setSelectedCategory,
     clearCurrentProduct,

@@ -13,20 +13,53 @@
           <div v-for="(item, index) in cartStore.items" :key="index" class="cart-item">
             <img :src="item.image" :alt="item.name" class="item-image" />
             <div class="item-details">
-              <!-- Tên sản phẩm, Đơn giá, Số lượng -->
+              <!-- Tên sản phẩm -->
               <div class="item-info">
                 <p class="item-name">{{ item.name }}</p>
+                
+                <!-- Ghi chú: Hiển thị các options đã chọn -->
+                <div class="item-options" v-if="hasOptions(item)">
+                  <div v-if="item.size" class="option-item">
+                    <i class="bi bi-cup"></i>
+                    <span>Size: {{ item.size }}</span>
+                  </div>
+                  <div v-if="item.toppings && item.toppings.length > 0" class="option-item">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Topping: {{ item.toppings.join(', ') }}</span>
+                  </div>
+                  <div v-if="item.ice" class="option-item">
+                    <i class="bi bi-snow"></i>
+                    <span>Độ đá: {{ item.ice }}</span>
+                  </div>
+                </div>
+                
                 <div class="item-meta">
-                  <span>Đơn giá: {{ formatPrice(item.price) }}</span>
-                  <label class="item-quantity">
-                    Số lượng:
-                    <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
-                  </label>
-                  <span>Tổng: {{ formatPrice(item.price * item.quantity) }}</span>
+                  <span class="item-price">Đơn giá: {{ formatPrice(item.price) }}</span>
+                  <div class="quantity-controls">
+                    <button 
+                      type="button" 
+                      class="btn btn-sm btn-outline-secondary" 
+                      @click="decreaseQuantity(index)"
+                      :disabled="item.quantity <= 1"
+                    >
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <span class="quantity-display">{{ item.quantity }}</span>
+                    <button 
+                      type="button" 
+                      class="btn btn-sm btn-outline-secondary" 
+                      @click="increaseQuantity(index)"
+                    >
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                  <span class="item-total">Tổng: {{ formatPrice(item.price * item.quantity) }}</span>
                 </div>
               </div>
               <!-- Nút xóa -->
-              <button class="btn-delete" @click="cartStore.removeFromCart(index)">Xóa</button>
+              <button class="btn-delete" @click="cartStore.removeFromCart(index)">
+                <i class="bi bi-trash"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -45,20 +78,57 @@
 
 <script setup>
 import { useCartStore } from '@/stores/cart'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 
 const cartStore = useCartStore()
+const router = useRouter()
+const authStore = useAuthStore()
 
 const closeModal = () => { cartStore.isOpen = false }
 
 const checkout = () => {
-  alert('Cảm ơn bạn đã đặt hàng!')
-  cartStore.clearCart()
+  // Ghi chú: Kiểm tra giỏ hàng trống
+  if (cartStore.items.length === 0) {
+    alert('Giỏ hàng trống!')
+    return
+  }
+  
+  // Ghi chú: Kiểm tra đăng nhập trước khi thanh toán
+  if (!authStore.isLoggedIn) {
+    // Ghi chú: Lưu đường dẫn trở về sau khi đăng nhập
+    authStore.returnUrl = '/checkout'
+    closeModal()
+    alert('Vui lòng đăng nhập để tiếp tục thanh toán!')
+    router.push('/login')
+    return
+  }
+  
+  // Ghi chú: Đóng modal và chuyển đến trang checkout
   closeModal()
+  router.push('/checkout')
 }
 
 const formatPrice = (price) => {
   if (typeof price !== 'number') return ''
   return new Intl.NumberFormat('de-DE').format(price) + 'đ'
+}
+
+// Ghi chú: Các hàm hỗ trợ quản lý giỏ hàng
+const hasOptions = (item) => {
+  return item.size || (item.toppings && item.toppings.length > 0) || item.ice
+}
+
+const increaseQuantity = (index) => {
+  if (cartStore.items[index].quantity < 99) {
+    cartStore.items[index].quantity++
+  }
+}
+
+const decreaseQuantity = (index) => {
+  if (cartStore.items[index].quantity > 1) {
+    cartStore.items[index].quantity--
+  }
 }
 </script>
 
@@ -135,15 +205,92 @@ const formatPrice = (price) => {
 .item-name {
   font-size: 1.1rem;
   font-weight: bold;
-  margin: 0;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+/* Ghi chú: Styles cho hiển thị options sản phẩm */
+.item-options {
+  margin-bottom: 12px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.option-item i {
+  color: #ff6b00;
+  font-size: 0.8rem;
+}
+
+.option-item:last-child {
+  margin-bottom: 0;
 }
 
 .item-meta {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: space-between;
+  gap: 1rem;
   color: #555;
-  flex-wrap: wrap; /* Cho phép xuống dòng nếu không đủ chỗ */
+  flex-wrap: wrap;
+}
+
+.item-price {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.item-total {
+  font-weight: 600;
+  color: #ff6b00;
+  font-size: 1rem;
+}
+
+/* Ghi chú: Styles cho điều khiển số lượng */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.quantity-controls button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantity-controls button:hover:not(:disabled) {
+  background-color: #f8f9fa;
+}
+
+.quantity-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-display {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+  padding: 0 8px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  background: #f8f9fa;
 }
 
 .item-quantity {
@@ -161,17 +308,23 @@ const formatPrice = (price) => {
 }
 
 .btn-delete {
-  background-color: white;
-  border: 1px solid #ccc;
-  color: #555;
-  padding: 0.3rem 1rem;
-  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
   cursor: pointer;
   align-self: flex-start;
   transition: all 0.2s;
 }
+
 .btn-delete:hover {
-  background-color: #f5f5f5;
+  background-color: #dc3545;
+  color: white;
 }
 
 /* Khu vực Footer cố định */

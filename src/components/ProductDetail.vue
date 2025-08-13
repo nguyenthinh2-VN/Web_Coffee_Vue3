@@ -2,8 +2,13 @@
   <div class="product-detail-container" v-if="product">
     <div class="product-detail-content">
       <!-- Left side - Product Image -->
-      <div class="product-image">
-        <img :src="product.hinh" :alt="product.tensp" />
+      <div class="product-image-section">
+        <div class="product-image">
+          <img :src="product.hinh" :alt="product.tensp" />
+        </div>
+        
+        <!-- Ghi chú: Component đánh giá sao riêng biệt dưới hình ảnh -->
+        <ProductRating :productId="product.id" />
       </div>
 
       <!-- Right side - Product Info -->
@@ -11,8 +16,10 @@
         <h1 class="product-title">{{ product.tensp }}</h1>
         <div class="product-price">{{ formatPrice(totalPrice) }}</div>
 
-        <!-- Size Selection -->
-        <div class="size-selection">
+        <!-- Ghi chú: UI động dựa trên loại sản phẩm - Logic phân biệt Cà phê và Trà -->
+        
+        <!-- Size Selection for Tea Products -->
+        <div v-if="isTeaProduct" class="size-selection">
           <h3>Chọn size (bắt buộc)</h3>
           <div class="size-options">
             <button
@@ -37,6 +44,86 @@
           </div>
         </div>
 
+        <!-- Fixed Size for Coffee Products -->
+        <div v-else class="coffee-size-info">
+          <h3>Size: Vừa (Size duy nhất)</h3>
+          <p class="size-note">Sản phẩm cà phê chỉ có một size cố định</p>
+        </div>
+
+        <!-- Topping Selection (Only for Tea Products) -->
+        <div v-if="isTeaProduct" class="topping-selection">
+          <h3>Chọn topping (tùy chọn)</h3>
+          <div class="topping-options">
+            <label
+              v-for="topping in toppings"
+              :key="topping.id"
+              class="topping-option"
+            >
+              <input
+                type="checkbox"
+                :value="topping.id"
+                v-model="selectedToppings"
+                class="topping-checkbox"
+              />
+              <div class="topping-info">
+                <span class="topping-name">{{ topping.tentopping }}</span>
+                <span class="topping-price">+{{ formatPrice(topping.gia) }}</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Ice Options Selection -->
+        <div class="ice-selection">
+          <h3>Chọn độ đá (bắt buộc)</h3>
+          <div class="ice-options">
+            <label
+              v-for="ice in iceOptions"
+              :key="ice.id"
+              class="ice-option"
+            >
+              <input
+                type="radio"
+                :value="ice.id"
+                v-model="selectedIce"
+                name="ice-option"
+                class="ice-radio"
+              />
+              <span class="ice-name">{{ ice.tenice }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Quantity Selection -->
+        <div class="quantity-selection">
+          <h3>Số lượng</h3>
+          <div class="quantity-controls">
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary quantity-btn" 
+              @click="decreaseQuantity"
+              :disabled="quantity <= 1"
+            >
+              <i class="bi bi-dash"></i>
+            </button>
+            <input 
+              type="number" 
+              class="form-control quantity-input" 
+              v-model.number="quantity"
+              min="1"
+              max="99"
+            />
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary quantity-btn" 
+              @click="increaseQuantity"
+              :disabled="quantity >= 99"
+            >
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+        </div>
+
         <!-- Order Button -->
         <button class="order-button" @click="addToCart">
           <n-icon size="20">
@@ -45,11 +132,8 @@
           Đặt giao tận nơi
         </button>
 
-        <!-- Product Description -->
-        <div class="product-description">
-          <h3>Mô tả sản phẩm</h3>
-          <p>{{ product.mota }}</p>
-        </div>
+
+    
       </div>
     </div>
 
@@ -64,6 +148,7 @@
 <script>
 import { ref, computed, onMounted, watch } from 'vue';
 import SlideItem from './SlideItem.vue';
+import ProductRating from './ProductRating.vue';
 import { NIcon } from 'naive-ui';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '../stores/productStore.js';
@@ -78,6 +163,7 @@ import {
 export default {
   components: {
     SlideItem,
+    ProductRating,
     NIcon,
     CafeOutline,
     BeerOutline,
@@ -89,11 +175,29 @@ export default {
     const productStore = useProductStore();
     const cartStore = useCartStore();
     const selectedSize = ref(null);
-    // Tính tổng giá tiền (giá gốc + giá size)
+    const selectedToppings = ref([]); // Ghi chú: Logic chọn topping
+    const selectedIce = ref(null); // Ghi chú: Logic chọn độ đá
+    const quantity = ref(1); // Ghi chú: Điều khiển số lượng
+    // Ghi chú: Xác định sản phẩm là trà hay cà phê dựa trên danh mục hoặc tên
+    const isTeaProduct = computed(() => {
+      // For now, assume products with 'Trà' or 'Tea' in name are tea products
+      // You can modify this logic based on actual category_id when tea products are added
+      const productName = productStore.currentProduct?.tensp?.toLowerCase() || '';
+      return productName.includes('trà') || productName.includes('tea') || productName.includes('sữa tươi');
+    });
+
+    // Tính tổng giá tiền (giá gốc + giá size + toppings)
     const totalPrice = computed(() => {
       const basePrice = productStore.currentProduct?.gia || 0;
-      const sizePrice = selectedSize.value?.gia || 0;
-      return basePrice + sizePrice;
+      const sizePrice = isTeaProduct.value ? (selectedSize.value?.gia || 0) : 0;
+      
+      // Tính giá topping
+      const toppingPrice = selectedToppings.value.reduce((total, toppingId) => {
+        const topping = productStore.toppings.find(t => t.id === toppingId);
+        return total + (topping?.gia || 0);
+      }, 0);
+      
+      return basePrice + sizePrice + toppingPrice;
     });
 
     // Chọn size
@@ -101,20 +205,66 @@ export default {
       selectedSize.value = size;
     };
 
+    // Ghi chú: Các hàm điều khiển số lượng
+    const increaseQuantity = () => {
+      if (quantity.value < 99) {
+        quantity.value++;
+      }
+    };
+
+    const decreaseQuantity = () => {
+      if (quantity.value > 1) {
+        quantity.value--;
+      }
+    };
+
+    // Ghi chú: Tải topping và tùy chọn đá từ productStore
+    const loadToppingsAndIce = async () => {
+      try {
+        // Load toppings and ice options from productStore
+        await productStore.fetchToppings();
+        await productStore.fetchIceOptions();
+        
+        // Set default ice option
+        if (productStore.iceOptions.length > 0) {
+          selectedIce.value = productStore.iceOptions[0].id;
+        }
+      } catch (error) {
+        console.error('Error loading toppings and ice options:', error);
+      }
+    };
+
     // Hàm thêm vào giỏ hàng
     const addToCart = () => {
-      if (!productStore.currentProduct || !selectedSize.value) {
+      // Validation based on product type
+      if (isTeaProduct.value && !selectedSize.value) {
         alert('Vui lòng chọn size trước khi thêm vào giỏ hàng!');
         return;
       }
+      
+      if (!selectedIce.value) {
+        alert('Vui lòng chọn độ đá trước khi thêm vào giỏ hàng!');
+        return;
+      }
+
+      // Get selected toppings info using productStore.toppings
+      const selectedToppingsInfo = selectedToppings.value.map(toppingId => {
+        const topping = productStore.toppings.find(t => t.id === toppingId);
+        return topping ? topping.tentopping : '';
+      }).filter(Boolean);
+      
+      // Get ice info using productStore.iceOptions
+      const iceInfo = productStore.iceOptions.find(ice => ice.id === selectedIce.value);
 
       cartStore.addToCart({
         id: productStore.currentProduct.id,
-        name: productStore.currentProduct.ten,
+        name: productStore.currentProduct.tensp,
         image: productStore.currentProduct.hinh,
-        size: selectedSize.value.ten,
+        size: isTeaProduct.value ? selectedSize.value?.tensize : 'Vừa',
+        toppings: selectedToppingsInfo,
+        ice: iceInfo?.tenice,
         price: totalPrice.value,
-        quantity: 1
+        quantity: quantity.value // Ghi chú: Sử dụng số lượng đã chọn
       });
       alert('✅ Đã thêm sản phẩm vào giỏ hàng!');
     };
@@ -134,6 +284,7 @@ export default {
         // Use store actions to fetch data
         await productStore.fetchProductById(productId);
         await productStore.fetchSizes();
+        await loadToppingsAndIce(); // Load toppings and ice options
         
         if (productStore.currentProduct) {
           await productStore.fetchRelatedProducts(productStore.currentProduct.category_id);
@@ -165,15 +316,23 @@ export default {
       product: computed(() => productStore.currentProduct),
       sizes: computed(() => productStore.sizes),
       relatedProducts: computed(() => productStore.relatedProducts),
+      toppings: computed(() => productStore.toppings), // Ghi chú: Sử dụng toppings từ productStore
+      iceOptions: computed(() => productStore.iceOptions), // Ghi chú: Sử dụng tùy chọn đá từ productStore
       loading: computed(() => productStore.currentProductLoading),
       error: computed(() => productStore.error),
       // Store actions
       formatPrice: productStore.formatPrice,
       // Local state and methods
       selectedSize,
+      selectedToppings, // Ghi chú: Logic chọn topping
+      selectedIce, // Ghi chú: Logic chọn độ đá
+      quantity, // Ghi chú: Điều khiển số lượng
+      isTeaProduct, // Ghi chú: Logic UI động
       totalPrice,
       selectSize,
-      addToCart // Đã expose hàm ra template
+      increaseQuantity, // Ghi chú: Hàm điều khiển số lượng
+      decreaseQuantity,
+      addToCart
     };
   }
 };
@@ -192,8 +351,14 @@ export default {
   margin-bottom: 40px;
 }
 
-.product-image {
+.product-image-section {
   flex: 0 0 570px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.product-image {
   height: 570px;
   border-radius: 8px;
   overflow: hidden;
@@ -291,6 +456,204 @@ export default {
   justify-content: center;
   flex-shrink: 0;
 }
+
+/* Coffee Size Info Styles */
+.coffee-size-info {
+  margin-bottom: 32px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #ff6b00;
+}
+
+.coffee-size-info h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.size-note {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Topping Selection Styles */
+.topping-selection {
+  margin-bottom: 32px;
+}
+
+.topping-selection h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.topping-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.topping-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.topping-option:hover {
+  border-color: #ff6b00;
+  background-color: #fff3e0;
+}
+
+.topping-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #ff6b00;
+}
+
+.topping-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.topping-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.topping-price {
+  font-size: 14px;
+  color: #ff6b00;
+  font-weight: 600;
+}
+
+/* Ice Selection Styles */
+.ice-selection {
+  margin-bottom: 32px;
+}
+
+.ice-selection h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.ice-options {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ice-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  min-width: 120px;
+}
+
+.ice-option:hover {
+  border-color: #ff6b00;
+  background-color: #fff3e0;
+}
+
+.ice-option:has(.ice-radio:checked) {
+  border-color: #ff6b00;
+  background-color: #fff3e0;
+}
+
+.ice-radio {
+  width: 16px;
+  height: 16px;
+  accent-color: #ff6b00;
+}
+
+.ice-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Quantity Selection Styles */
+.quantity-selection {
+  margin-bottom: 32px;
+}
+
+.quantity-selection h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  max-width: 150px;
+}
+
+.quantity-btn {
+  width: 40px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quantity-btn:first-child {
+  border-radius: 6px 0 0 6px;
+  border-right: none;
+}
+
+.quantity-btn:last-child {
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+}
+
+.quantity-btn:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-input {
+  width: 70px;
+  height: 38px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  font-weight: 600;
+}
+
+.quantity-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: none;
+}
 .order-button {
   width: 100%;
   padding: 18px;
@@ -316,22 +679,6 @@ export default {
   box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
 }
 
-.product-description {
-  border-top: 1px solid #eee;
-  padding-top: 32px;
-}
-
-.product-description h3 {
-  font-size: 18px;
-  margin-bottom: 16px;
-  color: #333;
-}
-
-.product-description p {
-  color: #666;
-  line-height: 1.8;
-  font-size: 16px;
-}
 
 .related-products {
   border-top: 1px solid #eee;
@@ -353,7 +700,7 @@ export default {
     gap: 32px;
   }
 
-  .product-image {
+  .product-image-section {
     flex: none;
     width: 100%;
     max-width: 570px;
@@ -379,6 +726,28 @@ export default {
     min-width: 120px;
   }
 
+  .topping-options {
+    gap: 8px;
+  }
+
+  .topping-option {
+    padding: 10px 12px;
+  }
+
+  .ice-options {
+    gap: 8px;
+  }
+
+  .ice-option {
+    padding: 10px 16px;
+    min-width: 100px;
+  }
+
+  .coffee-size-info {
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
   .size-name {
     font-size: 14px;
   }
@@ -386,10 +755,6 @@ export default {
   .order-button {
     padding: 16px;
     font-size: 16px;
-  }
-
-  .product-description p {
-    font-size: 14px;
   }
 
   .related-products {

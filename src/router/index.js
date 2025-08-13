@@ -7,11 +7,21 @@ import MenuProduct from '@/components/menuProduct.vue';
 import ProductDetail from '@/components/ProductDetail.vue';
 import BlogPage from '@/components/blogPage.vue';
 import CartModal from '@/components/CartModal.vue';
+import Checkout from '@/components/Checkout.vue';
 
 export const pinia = createPinia(); // Xuất pinia để sử dụng trong main.js
 
 const router = createRouter({
   history: createWebHistory(),
+  // Ghi chú: Cuộn lên đầu trang khi chuyển route để cải thiện UX
+  scrollBehavior(to, from, savedPosition) {
+    // If there's a saved position (back/forward navigation), use it
+    if (savedPosition) {
+      return savedPosition;
+    }
+    // Otherwise, scroll to top
+    return { top: 0, behavior: 'smooth' };
+  },
   routes: [
     {
       path: '/login',
@@ -54,7 +64,14 @@ const router = createRouter({
         path: '/cart',
         name: 'Cart',
         component: CartModal
-      }
+      },
+    {
+      path: '/checkout',
+      name: 'Checkout',
+      component: Checkout,
+      // Ghi chú: Route cho trang thanh toán - bắt buộc đăng nhập
+      meta: { requiresAuth: true }
+    }
   ]
 });
 
