@@ -12,6 +12,7 @@ export const useProductStore = defineStore('product', () => {
   const relatedProducts = ref([])
   const toppings = ref([]) // Ghi chú: Lưu trữ dữ liệu topping
   const iceOptions = ref([]) // Ghi chú: Lưu trữ dữ liệu tùy chọn đá
+  const pagination = ref(null) // Ghi chú: Lưu trữ thông tin phân trang
   
   // Separate loading states
   const productsLoading = ref(false)
@@ -33,7 +34,7 @@ export const useProductStore = defineStore('product', () => {
     
     const filtered = products.value.filter(product => product.category_id === selectedCategory.value)
     console.log(`Filtered products for category ${selectedCategory.value}:`, filtered.length, 'items')
-    console.log('Filtered products:', filtered.map(p => ({ id: p.id, name: p.tensp, category_id: p.category_id })))
+    console.log('Filtered products:', filtered.map(p => ({ id: p.id, name: p.tensp, price: p.gia, category_id: p.category_id })))
     return filtered
   })
 
@@ -53,7 +54,8 @@ export const useProductStore = defineStore('product', () => {
       categoriesLoading.value = true
       error.value = null
       const response = await axios.get(getApiUrl(API_ENDPOINTS.CATEGORIES))
-      categories.value = response.data
+      // Xử lý cấu trúc response: có thể là response.data hoặc response.data.data
+      categories.value = response.data.data || response.data
       console.log('Fetched categories:', categories.value)
       return categories.value
     } catch (err) {
@@ -68,7 +70,6 @@ export const useProductStore = defineStore('product', () => {
   const fetchProducts = async () => {
     // Don't fetch if already loaded
     if (products.value.length > 0) {
-      console.log('Products already loaded:', products.value.length, 'items')
       return products.value
     }
     
@@ -76,8 +77,24 @@ export const useProductStore = defineStore('product', () => {
       productsLoading.value = true
       error.value = null
       const response = await axios.get(getApiUrl(API_ENDPOINTS.PRODUCTS))
-      products.value = response.data
+      
+      // Xử lý cấu trúc response có nested data
+      if (response.data.data && response.data.data.data) {
+        // Cấu trúc: { success, message, data: { data: [...], pagination: {...} } }
+        products.value = response.data.data.data
+        pagination.value = response.data.data.pagination
+      } else if (response.data.data) {
+        // Cấu trúc: { data: [...] }
+        products.value = response.data.data
+      } else {
+        // Cấu trúc: [...]
+        products.value = response.data
+      }
+      
       console.log('Fetched products:', products.value.length, 'items')
+      if (pagination.value) {
+        console.log('Pagination:', pagination.value)
+      }
       return products.value
     } catch (err) {
       error.value = 'Không thể tải sản phẩm. Vui lòng thử lại.'
@@ -99,7 +116,8 @@ export const useProductStore = defineStore('product', () => {
       sizesLoading.value = true
       error.value = null
       const response = await axios.get(getApiUrl(API_ENDPOINTS.SIZES))
-      sizes.value = response.data
+      // Xử lý cấu trúc response: có thể là response.data hoặc response.data.data
+      sizes.value = response.data.data || response.data
       console.log('Fetched sizes:', sizes.value)
       return sizes.value
     } catch (err) {
@@ -121,8 +139,9 @@ export const useProductStore = defineStore('product', () => {
     try {
       toppingsLoading.value = true
       error.value = null
-      const response = await axios.get(getApiUrl(API_ENDPOINTS.TOPPINGS)) // Ghi chú: Lấy dữ liệu topping từ db.json
-      toppings.value = response.data
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.TOPPINGS)) // Ghi chú: Lấy dữ liệu topping từ API
+      // Xử lý cấu trúc response: có thể là response.data hoặc response.data.data
+      toppings.value = response.data.data || response.data
       console.log('Fetched toppings:', toppings.value)
       return toppings.value
     } catch (err) {
@@ -144,8 +163,9 @@ export const useProductStore = defineStore('product', () => {
     try {
       iceOptionsLoading.value = true
       error.value = null
-      const response = await axios.get(getApiUrl(API_ENDPOINTS.ICE_OPTIONS)) // Ghi chú: Lấy dữ liệu tùy chọn đá từ db.json
-      iceOptions.value = response.data
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.ICE_OPTIONS)) // Ghi chú: Lấy dữ liệu tùy chọn đá từ API
+      // Xử lý cấu trúc response: có thể là response.data hoặc response.data.data
+      iceOptions.value = response.data.data || response.data
       console.log('Fetched ice options:', iceOptions.value)
       return iceOptions.value
     } catch (err) {
@@ -204,7 +224,16 @@ export const useProductStore = defineStore('product', () => {
       const relatedResponse = await axios.get(
         getApiUrl(API_ENDPOINTS.PRODUCTS) + '?category_id=' + categoryId + '&limit=8'
       )
-      relatedProducts.value = relatedResponse.data
+      
+      // Xử lý cấu trúc response có nested data
+      if (relatedResponse.data.data && relatedResponse.data.data.data) {
+        relatedProducts.value = relatedResponse.data.data.data
+      } else if (relatedResponse.data.data) {
+        relatedProducts.value = relatedResponse.data.data
+      } else {
+        relatedProducts.value = relatedResponse.data
+      }
+      
       console.log('Related products:', relatedProducts.value)
       return relatedProducts.value
     } catch (err) {
@@ -259,6 +288,7 @@ export const useProductStore = defineStore('product', () => {
     relatedProducts,
     toppings, // Ghi chú: Expose state topping
     iceOptions, // Ghi chú: Expose state tùy chọn đá
+    pagination, // Ghi chú: Expose state phân trang
     error,
     selectedCategory,
     

@@ -101,7 +101,7 @@ export default defineComponent({
 
       return options.concat(
         productStore.categories.map(category => ({
-          label: category.tendm,
+          label: category.name,
           value: `category-${category.id}`
         }))
       );
@@ -120,7 +120,7 @@ export default defineComponent({
 
     const generateMenuOptions = () => {
       const categoryOptions = productStore.categories.map(category => ({
-        label: category.tendm,
+        label: category.name,
         key: `category-${category.id}`,
         icon: renderIcon(category.id === 1 ? CafeIcon : TeaIcon)
       }));

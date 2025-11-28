@@ -7,22 +7,22 @@ import { useRouter } from 'vue-router';
 const authStore = useAuthStore();
 const router = useRouter();
 
-const email = ref('');
+const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
 
 async function handleLogin() {
-  if (!email.value || !password.value) {
-    errorMessage.value = 'Vui lòng điền đầy đủ email và mật khẩu.';
+  if (!username.value || !password.value) {
+    errorMessage.value = 'Vui lòng điền đầy đủ tên đăng nhập và mật khẩu.';
     return;
   }
   isLoading.value = true;
   errorMessage.value = '';
   try {
-    await authStore.login(email.value, password.value);
+    await authStore.login(username.value, password.value);
     console.log('Redirecting to:', authStore.returnUrl || '/');
-    email.value = ''; // Clear inputs on success
+    username.value = ''; // Clear inputs on success
     password.value = '';
     router.push(authStore.returnUrl || '/');
   } catch (error) {
@@ -39,12 +39,15 @@ async function handleLogin() {
     <h2>Đăng nhập</h2>
     <form @submit.prevent="handleLogin">
       <div class="form-group">
-        <label>Email:</label>
-        <input v-model="email" type="email" required placeholder="Nhập email..." />
+        <label>Tên đăng nhập:</label>
+        <input v-model="username" type="text" required placeholder="Nhập tên đăng nhập..." />
       </div>
       <div class="form-group">
         <label>Mật khẩu:</label>
         <input v-model="password" type="password" required placeholder="Nhập mật khẩu..." />
+      </div>
+      <div class="forgot-password-link">
+        <router-link to="/forgot-password">Quên mật khẩu?</router-link>
       </div>
       <button type="submit" :disabled="isLoading">
         {{ isLoading ? 'Đang xử lý...' : 'Đăng nhập' }}
@@ -108,5 +111,21 @@ button:disabled {
   color: red;
   margin-top: 0.5rem;
   font-size: 0.9rem;
+}
+
+.forgot-password-link {
+  text-align: right;
+  margin-bottom: 1rem;
+  margin-top: -0.5rem;
+}
+
+.forgot-password-link a {
+  color: #ff6b00;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline;
 }
 </style>

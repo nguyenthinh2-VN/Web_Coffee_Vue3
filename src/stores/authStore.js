@@ -5,116 +5,265 @@ import { getApiUrl, API_ENDPOINTS } from '@/api';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     // Ghi chú: Khởi tạo trạng thái từ localStorage để giữ đăng nhập sau khi refresh
-    isLoggedIn: !!localStorage.getItem('authToken'),
+    isLoggedIn: !!localStorage.getItem('accessToken'),
     returnUrl: null,
-    userEmail: localStorage.getItem('userEmail') || null,
-    userName: localStorage.getItem('userName') || null,
+    accessToken: localStorage.getItem('accessToken') || null,
+    refreshToken: localStorage.getItem('refreshToken') || null,
+    user: JSON.parse(localStorage.getItem('user') || 'null'),
   }),
   actions: {
-    async login(email, password) {
+    async login(username, password) {
       try {
-        console.log('authStore.login called with:', { email, password });
-        // Fetch all users from db.json
-        const response = await axios.get(getApiUrl(API_ENDPOINTS.USERS));
-        const users = response.data;
-
-        // Find user with matching email and password
-        const user = users.find(u => u.email === email && u.password === password);
+        console.log('authStore.login called with:', { username });
         
-        if (!user) {
-          throw new Error('Email hoặc mật khẩu không đúng.');
+        const response = await axios.post(getApiUrl(API_ENDPOINTS.LOGIN), {
+          username,
+          password
+        });
+
+        const { data } = response.data;
+        
+        if (!data || !data.accessToken || !data.user) {
+          throw new Error('Invalid response from server');
         }
 
+        // Lưu tokens và user info
+        this.accessToken = data.accessToken;
+        this.refreshToken = data.refreshToken;
+        this.user = data.user;
         this.isLoggedIn = true;
-        this.userEmail = user.email;
-        this.userName = user.name;
-        localStorage.setItem('authToken', 'mock-token'); // Mock token for compatibility
-        localStorage.setItem('userEmail', user.email);
-        localStorage.setItem('userName', user.name);
-        console.log('Login successful:', { userEmail: user.email, userName: user.name });
-        return { email: user.email, name: user.name };
+        
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        console.log('Login successful:', { username: data.user.username });
+        return data;
       } catch (error) {
         console.error('Login failed:', {
           message: error.message,
           response: error.response?.data,
           status: error.response?.status,
-          stack: error.stack,
         });
-        const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.';
+        const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.';
         throw new Error(errorMessage);
       }
     },
-    async register({ name, email, password }) {
+    async register({ username, email, password, confirmPassword }) {
       try {
-        console.log('authStore.register called with:', { name, email, password });
-        // Check if email already exists
-        const usersResponse = await axios.get(getApiUrl(API_ENDPOINTS.USERS));
-        const users = usersResponse.data;
-        if (users.some(u => u.email === email)) {
-          throw new Error('Email đã được sử dụng.');
-        }
-
-        // Register new user
-        const response = await axios.post(getApiUrl(API_ENDPOINTS.USERS), {
-          name,
+        console.log('authStore.register called with:', { username, email });
+        
+        const response = await axios.post(getApiUrl(API_ENDPOINTS.REGISTER), {
+          username,
           email,
           password,
-        }, {
-          headers: { 'Content-Type': 'application/json' },
+          confirmPassword
         });
 
-        const { email: userEmail, name: userName } = response.data;
-        if (!userEmail || !userName) {
-          throw new Error('Invalid response from server: Missing email or name');
+        const { data } = response.data;
+        
+        if (!data || !data.username) {
+          throw new Error('Invalid response from server');
         }
 
-        this.isLoggedIn = true;
-        this.userEmail = userEmail;
-        this.userName = userName;
-        localStorage.setItem('authToken', 'mock-token'); // Mock token for compatibility
-        localStorage.setItem('userEmail', userEmail);
-        localStorage.setItem('userName', userName);
-        console.log('Register successful:', { userEmail, userName });
-        return response.data;
+        console.log('Register successful:', { username: data.username });
+        return data;
       } catch (error) {
         console.error('Register failed:', {
           message: error.message,
           response: error.response?.data,
           status: error.response?.status,
-          stack: error.stack,
         });
         const errorMessage = error.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.';
         throw new Error(errorMessage);
       }
     },
-    logout() {
-      console.log('authStore.logout called')
-      this.isLoggedIn = false
-      this.userEmail = null
-      this.userName = null
-      this.returnUrl = null
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('userEmail')
-      localStorage.removeItem('userName')
+    async logout() {
+      try {
+        console.log('authStore.logout called');
+        
+        // Gọi API logout nếu có token
+        if (this.accessToken) {
+          await axios.post(getApiUrl(API_ENDPOINTS.LOGOUT), {}, {
+            headers: {
+              'Authorization': `Bearer ${this.accessToken}`
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Logout API call failed:', error.message);
+        // Vẫn tiếp tục logout ở client dù API fail
+      } finally {
+        // Clear state và localStorage
+        this.isLoggedIn = false;
+        this.accessToken = null;
+        this.refreshToken = null;
+        this.user = null;
+        this.returnUrl = null;
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+      }
     },
     
+    async refreshAccessToken() {
+      try {
+        if (!this.refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        const response = await axios.post(getApiUrl(API_ENDPOINTS.REFRESH), {
+          refreshToken: this.refreshToken
+        });
+
+        const { data } = response.data;
+        
+        if (!data || !data.accessToken) {
+          throw new Error('Invalid refresh response');
+        }
+
+        this.accessToken = data.accessToken;
+        localStorage.setItem('accessToken', data.accessToken);
+        
+        console.log('Token refreshed successfully');
+        return data.accessToken;
+      } catch (error) {
+        console.error('Token refresh failed:', error.message);
+        // Nếu refresh fail, logout user
+        await this.logout();
+        throw error;
+      }
+    },
+
+    async fetchProfile() {
+      try {
+        if (!this.accessToken) {
+          throw new Error('No access token available');
+        }
+
+        const response = await axios.get(getApiUrl(API_ENDPOINTS.PROFILE), {
+          headers: {
+            'Authorization': `Bearer ${this.accessToken}`
+          }
+        });
+
+        const { data } = response.data;
+        
+        if (data) {
+          this.user = data;
+          localStorage.setItem('user', JSON.stringify(data));
+        }
+
+        return data;
+      } catch (error) {
+        console.error('Fetch profile failed:', error.message);
+        throw error;
+      }
+    },
+
     // Ghi chú: Kiểm tra và khởi tạo trạng thái đăng nhập
     initializeAuth() {
-      const token = localStorage.getItem('authToken')
-      const userEmail = localStorage.getItem('userEmail')
-      const userName = localStorage.getItem('userName')
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+      const userStr = localStorage.getItem('user');
       
-      if (token && userEmail && userName) {
-        this.isLoggedIn = true
-        this.userEmail = userEmail
-        this.userName = userName
-        console.log('Auth state initialized from localStorage:', { userEmail, userName })
+      if (accessToken && refreshToken && userStr) {
+        try {
+          this.accessToken = accessToken;
+          this.refreshToken = refreshToken;
+          this.user = JSON.parse(userStr);
+          this.isLoggedIn = true;
+          console.log('Auth state initialized from localStorage:', { username: this.user?.username });
+        } catch (error) {
+          console.error('Failed to parse user data:', error);
+          this.logout();
+        }
       } else {
-        this.isLoggedIn = false
-        this.userEmail = null
-        this.userName = null
-        console.log('No valid auth data in localStorage')
+        this.isLoggedIn = false;
+        this.accessToken = null;
+        this.refreshToken = null;
+        this.user = null;
+        console.log('No valid auth data in localStorage');
+      }
+    },
+
+    // Ghi chú: Gửi OTP đến email
+    async sendOtp(email) {
+      try {
+        console.log('authStore.sendOtp called with:', { email });
+        
+        const response = await axios.post(getApiUrl(API_ENDPOINTS.FORGOT_PASSWORD), {
+          email
+        });
+
+        const { message } = response.data;
+        console.log('OTP sent successfully:', message);
+        return { success: true, message };
+      } catch (error) {
+        console.error('Send OTP failed:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        const errorMessage = error.response?.data?.message || 'Gửi OTP thất bại. Vui lòng thử lại.';
+        throw new Error(errorMessage);
+      }
+    },
+
+    // Ghi chú: Xác minh OTP (tùy chọn)
+    async verifyOtp(email, otp) {
+      try {
+        console.log('authStore.verifyOtp called with:', { email, otp });
+        
+        const response = await axios.post(getApiUrl(API_ENDPOINTS.VERIFY_OTP), {
+          email,
+          otp
+        });
+
+        const { success, message } = response.data;
+        console.log('OTP verification result:', { success, message });
+        return { success, message };
+      } catch (error) {
+        console.error('Verify OTP failed:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        const errorMessage = error.response?.data?.message || 'Xác minh OTP thất bại. Vui lòng thử lại.';
+        throw new Error(errorMessage);
+      }
+    },
+
+    // Ghi chú: Đặt lại mật khẩu
+    async resetPassword(email, otp, newPassword) {
+      try {
+        console.log('authStore.resetPassword called with:', { email });
+        
+        const response = await axios.post(getApiUrl(API_ENDPOINTS.RESET_PASSWORD), {
+          email,
+          otp,
+          newPassword
+        });
+
+        const { message } = response.data;
+        console.log('Password reset successful:', message);
+        return { success: true, message };
+      } catch (error) {
+        console.error('Reset password failed:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        const errorMessage = error.response?.data?.message || 'Đặt lại mật khẩu thất bại. Vui lòng thử lại.';
+        throw new Error(errorMessage);
       }
     }
+  },
+
+  getters: {
+    userName: (state) => state.user?.username || null,
+    userEmail: (state) => state.user?.email || null,
+    userId: (state) => state.user?.id || null,
+    userRole: (state) => state.user?.role || null,
   },
 });

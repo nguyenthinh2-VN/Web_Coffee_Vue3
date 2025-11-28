@@ -1,0 +1,28 @@
+{
+    "success": true,
+    "message": "Lấy danh sách địa chỉ thành công",
+    "data": [
+        {
+            "id": 4,
+            "fullName": "Thịnh Online",
+            "phone": "123135423",
+            "district": "Huyện Hóc Môn",
+            "city": "TP.HCM",
+            "fullAddress": "Xã Xuân Thới Đông, Huyện Hóc Môn, TP.HCM",
+            "isDefault": true,
+            "createdAt": "2025-11-27T09:50:28",
+            "updatedAt": null
+        },
+        {
+            "id": 5,
+            "fullName": "Thịnh Online",
+            "phone": "123135423",
+            "district": "Huyện Hóc Môn",
+            "city": "TP.HCM",
+            "fullAddress": "Xã Xuân Thới Đông, Huyện Hóc Môn, TP.HCM",
+            "isDefault": true,
+            "createdAt": "2025-11-27T09:50:28",
+            "updatedAt": null
+        }
+    ]
+}

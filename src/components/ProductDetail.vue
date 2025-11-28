@@ -255,13 +255,19 @@ export default {
       
       // Get ice info using productStore.iceOptions
       const iceInfo = productStore.iceOptions.find(ice => ice.id === selectedIce.value);
+      
+      // Get size info
+      const sizeInfo = isTeaProduct.value ? selectedSize.value : null;
 
       cartStore.addToCart({
         id: productStore.currentProduct.id,
         name: productStore.currentProduct.tensp,
         image: productStore.currentProduct.hinh,
         size: isTeaProduct.value ? selectedSize.value?.tensize : 'Vừa',
+        sizeId: sizeInfo?.id || 1,
         toppings: selectedToppingsInfo,
+        toppingIds: selectedToppings.value,
+        iceOptionId: selectedIce.value,
         ice: iceInfo?.tenice,
         price: totalPrice.value,
         quantity: quantity.value // Ghi chú: Sử dụng số lượng đã chọn

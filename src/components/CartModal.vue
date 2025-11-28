@@ -11,7 +11,7 @@
         <!-- PHẦN BODY: Danh sách sản phẩm sẽ cuộn tại đây -->
         <div class="cart-list">
           <div v-for="(item, index) in cartStore.items" :key="index" class="cart-item">
-            <img :src="item.image" :alt="item.name" class="item-image" />
+            <img :src="item.image" :alt="item.name" class="item-image" />   
             <div class="item-details">
               <!-- Tên sản phẩm -->
               <div class="item-info">
@@ -97,16 +97,16 @@ const checkout = () => {
   // Ghi chú: Kiểm tra đăng nhập trước khi thanh toán
   if (!authStore.isLoggedIn) {
     // Ghi chú: Lưu đường dẫn trở về sau khi đăng nhập
-    authStore.returnUrl = '/checkout'
+    authStore.returnUrl = '/order-preview'
     closeModal()
     alert('Vui lòng đăng nhập để tiếp tục thanh toán!')
     router.push('/login')
     return
   }
   
-  // Ghi chú: Đóng modal và chuyển đến trang checkout
+  // Ghi chú: Đóng modal và chuyển đến trang xem trước đơn hàng
   closeModal()
-  router.push('/checkout')
+  router.push('/order-preview')
 }
 
 const formatPrice = (price) => {

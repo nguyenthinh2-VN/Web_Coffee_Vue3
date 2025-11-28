@@ -8,7 +8,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const form = ref({
-  name: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -18,7 +18,7 @@ const isLoading = ref(false);
 
 async function handleRegister() {
   console.log('handleRegister called with:', form.value);
-  if (!form.value.name || !form.value.email || !form.value.password || !form.value.confirmPassword) {
+  if (!form.value.username || !form.value.email || !form.value.password || !form.value.confirmPassword) {
     errorMessage.value = 'Vui lòng điền đầy đủ thông tin.';
     return;
   }
@@ -30,12 +30,13 @@ async function handleRegister() {
   errorMessage.value = '';
   try {
     await authStore.register({
-      name: form.value.name,
+      username: form.value.username,
       email: form.value.email,
       password: form.value.password,
+      confirmPassword: form.value.confirmPassword,
     });
     console.log('Registration successful, redirecting to /login');
-    form.value = { name: '', email: '', password: '', confirmPassword: '' }; // Clear inputs
+    form.value = { username: '', email: '', password: '', confirmPassword: '' }; // Clear inputs
     router.push('/login');
   } catch (error) {
     errorMessage.value = error.message;
@@ -51,8 +52,8 @@ async function handleRegister() {
     <h2>Đăng ký</h2>
     <form @submit.prevent="handleRegister">
       <div class="form-group">
-        <label>Tên:</label>
-        <input v-model="form.name" type="text" required placeholder="Nhập tên..." />
+        <label>Tên đăng nhập:</label>
+        <input v-model="form.username" type="text" required placeholder="Nhập tên đăng nhập..." />
       </div>
       <div class="form-group">
         <label>Email:</label>

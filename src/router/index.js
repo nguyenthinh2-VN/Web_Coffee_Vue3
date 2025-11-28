@@ -7,6 +7,7 @@ import MenuProduct from '@/components/menuProduct.vue';
 import ProductDetail from '@/components/ProductDetail.vue';
 import BlogPage from '@/components/blogPage.vue';
 import CartModal from '@/components/CartModal.vue';
+import OrderPreview from '@/components/OrderPreview.vue';
 import Checkout from '@/components/Checkout.vue';
 
 export const pinia = createPinia(); // Xuất pinia để sử dụng trong main.js
@@ -33,6 +34,12 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: () => import('@/components/Register.vue'),
+      meta: { requiresGuest: true }
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      component: () => import('@/components/ForgotPassword.vue'),
       meta: { requiresGuest: true }
     },
     {
@@ -65,6 +72,13 @@ const router = createRouter({
         name: 'Cart',
         component: CartModal
       },
+    {
+      path: '/order-preview',
+      name: 'OrderPreview',
+      component: OrderPreview,
+      // Ghi chú: Route cho trang xem trước đơn hàng - bắt buộc đăng nhập
+      meta: { requiresAuth: true }
+    },
     {
       path: '/checkout',
       name: 'Checkout',

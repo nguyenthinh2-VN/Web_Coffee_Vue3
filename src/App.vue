@@ -13,10 +13,12 @@
 </template>
 
 <script>
+import { onMounted } from 'vue'
 import HeaderCompo from '@/components/HeaderCompo.vue'
 import FooterCompo from '@/components/FooterCompo.vue'
 import CartModal from '@/components/CartModal.vue'
 import { NMessageProvider } from 'naive-ui'
+import { useAuthStore } from '@/stores/authStore'
 
 export default {
   name: 'App',
@@ -25,6 +27,14 @@ export default {
     FooterCompo,
     CartModal,
     NMessageProvider
+  },
+  setup() {
+    const authStore = useAuthStore()
+    
+    // Khởi tạo auth state từ localStorage khi app load
+    onMounted(() => {
+      authStore.initializeAuth()
+    })
   }
 }
 </script>

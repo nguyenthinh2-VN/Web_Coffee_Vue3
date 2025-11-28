@@ -28,8 +28,8 @@
             <li class="nav-item">
               <a class="nav-link" href="#">Cửa hàng</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Welcome {{ authStore.userName }}</a>
+            <li v-if="authStore.isLoggedIn" class="nav-item">
+              <a class="nav-link" href="#">Xin chào {{ authStore.userName }}</a>
             </li>
             <li class="nav-item">
               <router-link

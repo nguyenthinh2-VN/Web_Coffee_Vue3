@@ -1,0 +1,49 @@
+{
+    "success": true,
+    "message": "Preview giá thành công",
+    "data": {
+        "subtotal": 135000,
+        "tax": 0,
+        "shippingFee": 0,
+        "discount": 13500,
+        "voucherCode": "SAVE10",
+        "totalAmount": 121500,
+        "items": [
+            {
+                "id": null,
+                "productId": 12,
+                "productName": "Trà Sữa Oolong Nướng Sương Sáo",
+                "sizeId": 2,
+                "sizeName": "M",
+                "quantity": 1,
+                "price": 55000,
+                "sizePrice": 5000,
+                "toppingIds": "[1, 2]",
+                "toppingNames": "Chân trâu đen, Chân hoàng kim",
+                "toppingPrice": 10000,
+                "iceOptionId": 1,
+                "iceOptionName": "Ít đá",
+                "notes": "Ít đá, bỏ riêng",
+                "subtotal": 70000
+            },
+            {
+                "id": null,
+                "productId": 13,
+                "productName": "Trà Sữa Oolong Tứ Quý Sương Sáo",
+                "sizeId": 2,
+                "sizeName": "M",
+                "quantity": 1,
+                "price": 55000,
+                "sizePrice": 5000,
+                "toppingIds": "[1]",
+                "toppingNames": "Chân trâu đen",
+                "toppingPrice": 5000,
+                "iceOptionId": 1,
+                "iceOptionName": "Ít đá",
+                "notes": "Ít đá, bỏ riêng",
+                "subtotal": 65000
+            }
+        ],
+        "message": "Giá có thể thay đổi khi đặt hàng. Vui lòng xác nhận trước khi thanh toán."
+    }
+}

@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "productId": 12,
+      "sizeId": 2,
+      "quantity": 1,
+      "toppingIds": [
+        1,2
+      ],
+      "iceOptionId": 1,
+      "notes": "Ít đá, bỏ riêng"
+    },
+    {
+      "productId": 13,
+      "sizeId": 2,
+      "quantity": 1,
+      "toppingIds": [
+        1
+      ],
+      "iceOptionId": 1,
+      "notes": "Ít đá, bỏ riêng"
+    }
+  ],
+  "addressId": 2,
+  "voucherCode": "SAVE10",
+  "deliveryMethod": "DELIVERY"
+}

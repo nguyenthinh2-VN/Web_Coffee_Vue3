@@ -83,7 +83,7 @@ export default {
         const response = await axios.get(getApiUrl(API_ENDPOINTS.PRODUCTS));
         
         // Chỉ lấy 4 phần tử đầu tiên
-        products.value = response.data.slice(0, 4);
+        products.value = response.data.data.slice(0, 4);
         
         console.log('Fetched products:', products.value);
       } catch (err) {
