@@ -34,7 +34,7 @@
               <i class="bi bi-pencil"></i>
               Thay Đổi
             </button>
-            <button class="btn-add" @click="goToAddAddress" disabled>
+            <button class="btn-add" @click="openAddAddressModal">
               <i class="bi bi-plus"></i>
               Thêm Địa Chỉ
             </button>
@@ -87,6 +87,105 @@
         </div>
       </div>
 
+      <!-- Modal Thêm Địa Chỉ -->
+      <div class="modal-overlay" v-if="showAddAddressModal" @click.self="closeAddAddressModal">
+        <div class="modal-content add-address-modal">
+          <div class="modal-header">
+            <h3>Thêm Địa Chỉ Mới</h3>
+            <button class="btn-close" @click="closeAddAddressModal">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="addNewAddress" class="add-address-form">
+              <div class="form-group">
+                <label>Họ Tên *</label>
+                <input 
+                  v-model="newAddress.fullName" 
+                  type="text" 
+                  placeholder="Nhập họ tên"
+                  class="form-input"
+                  :disabled="isLoading"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Số Điện Thoại *</label>
+                <input 
+                  v-model="newAddress.phone" 
+                  type="tel" 
+                  placeholder="Nhập số điện thoại"
+                  class="form-input"
+                  :disabled="isLoading"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Địa Chỉ Chi Tiết *</label>
+                <input 
+                  v-model="newAddress.fullAddress" 
+                  type="text" 
+                  placeholder="Nhập địa chỉ chi tiết"
+                  class="form-input"
+                  :disabled="isLoading"
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Quận/Huyện *</label>
+                  <input 
+                    v-model="newAddress.district" 
+                    type="text" 
+                    placeholder="Nhập quận/huyện"
+                    class="form-input"
+                    :disabled="isLoading"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Thành Phố *</label>
+                  <input 
+                    v-model="newAddress.city" 
+                    type="text" 
+                    placeholder="Nhập thành phố"
+                    class="form-input"
+                    :disabled="isLoading"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    v-model="newAddress.isDefault" 
+                    type="checkbox"
+                    :disabled="isLoading"
+                  />
+                  <span>Đặt làm địa chỉ mặc định</span>
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" @click="closeAddAddressModal" :disabled="isLoading">
+                  Hủy
+                </button>
+                <button type="submit" class="btn-submit" :disabled="isLoading">
+                  <span v-if="isLoading">
+                    <i class="bi bi-hourglass-split"></i>
+                    Đang thêm...
+                  </span>
+                  <span v-else>
+                    <i class="bi bi-check-circle"></i>
+                    Thêm Địa Chỉ
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <!-- Section 2: Danh Sách Sản Phẩm -->
       <div class="section products-section">
         <h2 class="section-title">
@@ -135,8 +234,18 @@
             type="text" 
             placeholder="Nhập mã voucher (nếu có)"
             class="voucher-input"
+            :disabled="isLoading"
           />
-          <button class="btn-apply" @click="applyVoucher">Áp Dụng</button>
+          <button class="btn-apply" @click="applyVoucher" :disabled="isLoading">
+            <span v-if="isLoading">
+              <i class="bi bi-hourglass-split"></i>
+              Đang xử lý...
+            </span>
+            <span v-else>
+              <i class="bi bi-check-circle"></i>
+              Áp Dụng
+            </span>
+          </button>
         </div>
         <p v-if="voucherCode" class="voucher-applied">
           <i class="bi bi-check-circle"></i>
@@ -166,13 +275,70 @@
         </div>
       </div>
 
-      <!-- Section 5: Tóm Tắt Đơn Hàng -->
+      <!-- Section 5: Phương Thức Thanh Toán -->
+      <div class="section payment-section">
+        <h2 class="section-title">
+          <i class="bi bi-credit-card"></i>
+          Phương Thức Thanh Toán
+        </h2>
+        <div class="payment-options">
+          <label class="payment-option">
+            <input 
+              v-model="paymentMethod" 
+              type="radio" 
+              value="COD"
+              :disabled="isLoading"
+            />
+            <span class="option-label">
+              <strong>Thanh Toán Khi Nhận Hàng (COD)</strong>
+              <small>(Mặc định)</small>
+            </span>
+          </label>
+          <label class="payment-option">
+            <input 
+              v-model="paymentMethod" 
+              type="radio" 
+              value="VNPAY"
+              :disabled="isLoading"
+            />
+            <span class="option-label">
+              <strong>Thanh Toán Online (VNPAY)</strong>
+              <small>(Quét mã QR hoặc nhập thẻ)</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Section 6: Ghi Chú -->
+      <div class="section notes-section">
+        <h2 class="section-title">
+          <i class="bi bi-chat-dots"></i>
+          Ghi Chú Đơn Hàng
+        </h2>
+        <textarea 
+          v-model="orderNotes" 
+          placeholder="Nhập ghi chú (không đá, bỏ riêng, v.v...)"
+          class="notes-textarea"
+          :disabled="isLoading"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <!-- Section 7: Tóm Tắt Đơn Hàng -->
       <div class="section summary-section">
         <h2 class="section-title">
           <i class="bi bi-receipt"></i>
           Tóm Tắt Đơn Hàng
         </h2>
-        <div class="summary-details">
+        
+        <!-- Loading State -->
+        <div v-if="isLoading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Đang tính toán giá...</p>
+        </div>
+
+        <!-- Summary Details -->
+        <div v-else class="summary-details">
           <div class="summary-row">
             <span>Tạm tính:</span>
             <span>{{ formatPrice(subtotal) }}</span>
@@ -222,9 +388,22 @@ const orderStore = useOrderStore()
 const addresses = ref([])
 const selectedAddress = ref(null)
 const showAddressModal = ref(false)
+const showAddAddressModal = ref(false)
 const voucherCode = ref('')
 const deliveryMethod = ref('DELIVERY')
+const paymentMethod = ref('COD')
+const orderNotes = ref('')
 const isLoading = ref(false)
+
+// State cho form thêm địa chỉ
+const newAddress = ref({
+  fullName: '',
+  phone: '',
+  district: '',
+  city: '',
+  fullAddress: '',
+  isDefault: false
+})
 
 // State từ API preview
 const previewData = ref({
@@ -256,11 +435,6 @@ const formatPrice = (price) => {
 
 const goBack = () => {
   router.go(-1)
-}
-
-const goToAddAddress = () => {
-  // Để sau
-  alert('Chức năng thêm địa chỉ sẽ được cập nhật sớm')
 }
 
 const loadDefaultAddress = async () => {
@@ -322,6 +496,95 @@ const closeAddressModal = () => {
 
 const selectAddress = (address) => {
   selectedAddress.value = address
+}
+
+const openAddAddressModal = () => {
+  showAddAddressModal.value = true
+}
+
+const closeAddAddressModal = () => {
+  showAddAddressModal.value = false
+  // Reset form
+  newAddress.value = {
+    fullName: '',
+    phone: '',
+    district: '',
+    city: '',
+    fullAddress: '',
+    isDefault: false
+  }
+}
+
+const addNewAddress = async () => {
+  // Validation
+  if (!newAddress.value.fullName.trim()) {
+    alert('Vui lòng nhập họ tên')
+    return
+  }
+  if (!newAddress.value.phone.trim()) {
+    alert('Vui lòng nhập số điện thoại')
+    return
+  }
+  if (!newAddress.value.fullAddress.trim()) {
+    alert('Vui lòng nhập địa chỉ chi tiết')
+    return
+  }
+  if (!newAddress.value.district.trim()) {
+    alert('Vui lòng nhập quận/huyện')
+    return
+  }
+  if (!newAddress.value.city.trim()) {
+    alert('Vui lòng nhập thành phố')
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    const token = localStorage.getItem('accessToken')
+    const response = await axios.post(
+      'http://localhost:3000/addresses/create',
+      {
+        fullName: newAddress.value.fullName,
+        phone: newAddress.value.phone,
+        district: newAddress.value.district,
+        city: newAddress.value.city,
+        fullAddress: newAddress.value.fullAddress,
+        isDefault: newAddress.value.isDefault
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    console.log('Add address response:', response.data)
+
+    if (response.data && response.data.success) {
+      alert('✅ Thêm địa chỉ thành công!')
+      
+      // Thêm địa chỉ mới vào danh sách
+      addresses.value.push(response.data.data)
+      
+      // Chọn địa chỉ mới
+      selectedAddress.value = response.data.data
+      
+      // Đóng modal
+      closeAddAddressModal()
+      closeAddressModal()
+      
+      // Reload preview data với địa chỉ mới
+      await loadPreviewData()
+    }
+  } catch (error) {
+    console.error('Lỗi thêm địa chỉ:', error)
+    console.error('Error details:', error.response?.data)
+    alert('❌ Thêm địa chỉ thất bại. Vui lòng thử lại.')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const applyVoucher = async () => {
@@ -410,7 +673,159 @@ const confirmAndProceed = async () => {
   isLoading.value = true
 
   try {
-    // Chuẩn bị request body theo cấu trúc request.json
+    // Chuẩn bị request body để tạo đơn hàng
+    const requestBody = {
+      items: cartItems.value.map(item => ({
+        productId: item.id,
+        sizeId: item.sizeId || 1,
+        quantity: item.quantity,
+        toppingIds: Array.isArray(item.toppingIds) ? item.toppingIds : [],
+        iceOptionId: item.iceOptionId || 1,
+        notes: item.notes || ''
+      })),
+      addressId: selectedAddress.value.id,
+      voucherCode: voucherCode.value || '',
+      deliveryMethod: deliveryMethod.value,
+      paymentMethod: paymentMethod.value,
+      notes: orderNotes.value || ''
+    }
+
+    console.log('Creating order with request:', requestBody)
+
+    // Gọi API tạo đơn hàng
+    const token = localStorage.getItem('accessToken')
+    const response = await axios.post(
+      'http://localhost:3000/orders/create',
+      requestBody,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    console.log('Order created response:', response.data)
+
+    if (response.data && response.data.success && response.data.data) {
+      const orderId = response.data.data.id
+      const orderData = response.data.data
+
+      // Lưu thông tin đơn hàng vào orderStore
+      orderStore.setPreviewData(orderData)
+      orderStore.setSelectedAddress(selectedAddress.value)
+      orderStore.setVoucherCode(voucherCode.value)
+      orderStore.setDeliveryMethod(deliveryMethod.value)
+
+      console.log('Order created successfully:', orderId)
+
+      // Nếu thanh toán COD, chuyển sang trang Order Success
+      if (paymentMethod.value === 'COD') {
+        alert('✅ Tạo đơn hàng thành công!')
+        router.push({
+          name: 'OrderSuccess',
+          params: { orderId: orderId }
+        })
+      }
+      // Nếu thanh toán VNPAY, gọi API để lấy link thanh toán
+      else if (paymentMethod.value === 'VNPAY') {
+        await createVNPayPayment(orderId)
+      }
+    }
+  } catch (error) {
+    console.error('Lỗi tạo đơn hàng:', error)
+    console.error('Error details:', error.response?.data)
+    alert('❌ Tạo đơn hàng thất bại. Vui lòng thử lại.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Hàm tạo link thanh toán VNPAY
+const createVNPayPayment = async (orderId) => {
+  try {
+    isLoading.value = true
+
+    const token = localStorage.getItem('accessToken')
+    const response = await axios.post(
+      `http://localhost:3000/orders/${orderId}/vnpay-payment`,
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    console.log('VNPAY payment response:', response.data)
+
+    if (response.data && response.data.data && response.data.data.redirectUrl) {
+      // Lưu orderId vào localStorage để sử dụng sau khi callback
+      localStorage.setItem('lastOrderId', orderId)
+      
+      // Mở VNPAY payment link trong tab mới
+      // Sau khi thanh toán, user sẽ quay lại và cần check status
+      window.open(response.data.data.redirectUrl, '_blank')
+      
+      // Sau 2 giây, check status đơn hàng
+      setTimeout(() => {
+        checkOrderStatus(orderId)
+      }, 2000)
+    }
+  } catch (error) {
+    console.error('Lỗi tạo link thanh toán VNPAY:', error)
+    console.error('Error details:', error.response?.data)
+    alert('❌ Tạo link thanh toán thất bại. Vui lòng thử lại.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Hàm check status đơn hàng
+const checkOrderStatus = async (orderId) => {
+  try {
+    const token = localStorage.getItem('accessToken')
+    const response = await axios.get(
+      `http://localhost:3000/orders/${orderId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    )
+
+    console.log('Order status:', response.data)
+
+    // Nếu backend trả về success = true, có nghĩa thanh toán thành công
+    if (response.data && response.data.success) {
+      console.log('Order paid, redirecting to success page')
+      router.push({
+        name: 'OrderSuccess',
+        params: { orderId: orderId }
+      })
+    }
+  } catch (error) {
+    console.error('Lỗi check order status:', error)
+  }
+}
+
+// Hàm load preview data từ API
+const loadPreviewData = async () => {
+  if (!selectedAddress.value) {
+    console.warn('No address selected')
+    return
+  }
+
+  if (cartItems.value.length === 0) {
+    console.warn('Cart is empty')
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    // Chuẩn bị request body
     const requestBody = {
       items: cartItems.value.map(item => ({
         productId: item.id,
@@ -425,7 +840,7 @@ const confirmAndProceed = async () => {
       deliveryMethod: deliveryMethod.value
     }
 
-    console.log('Request body:', requestBody)
+    console.log('Loading preview data with request:', requestBody)
 
     // Gọi API preview
     const token = localStorage.getItem('accessToken')
@@ -440,9 +855,8 @@ const confirmAndProceed = async () => {
       }
     )
 
-    console.log('Preview response:', response.data)
+    console.log('Preview data response:', response.data)
 
-    // Lưu preview data vào state và orderStore
     if (response.data && response.data.data) {
       // Cập nhật previewData state
       previewData.value = {
@@ -452,21 +866,11 @@ const confirmAndProceed = async () => {
         discount: response.data.data.discount || 0,
         totalAmount: response.data.data.totalAmount || 0
       }
-      
-      // Lưu vào orderStore
-      orderStore.setPreviewData(response.data.data)
-      orderStore.setSelectedAddress(selectedAddress.value)
-      orderStore.setVoucherCode(voucherCode.value)
-      orderStore.setDeliveryMethod(deliveryMethod.value)
-      
-      console.log('Preview data saved:', previewData.value)
+      console.log('Preview data loaded:', previewData.value)
     }
-    
-    // Chuyển sang trang Checkout
-    router.push('/checkout')
   } catch (error) {
-    console.error('Lỗi preview đơn hàng:', error)
-    alert('Không thể xem trước đơn hàng. Vui lòng thử lại.')
+    console.error('Lỗi load preview data:', error)
+    console.error('Error details:', error.response?.data)
   } finally {
     isLoading.value = false
   }
@@ -501,6 +905,10 @@ onMounted(async () => {
       city: 'TP.HCM'
     }
   }
+
+  // Load preview data ngay sau khi có địa chỉ
+  console.log('Loading preview data on mount...')
+  await loadPreviewData()
 })
 </script>
 
@@ -922,8 +1330,14 @@ onMounted(async () => {
   transition: background 0.2s;
 }
 
-.btn-apply:hover {
+.btn-apply:hover:not(:disabled) {
   background: #e55a00;
+}
+
+.btn-apply:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .voucher-applied {
@@ -973,6 +1387,35 @@ onMounted(async () => {
   color: black;
 }
 
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 15px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f0f0f0;
+  border-top: 4px solid #ff6b00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
 /* Summary Section */
 .summary-details {
   display: flex;
@@ -1005,6 +1448,60 @@ onMounted(async () => {
   color: #ff6b00;
 }
 
+/* Payment Section */
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-option:hover {
+  border-color: #ff6b00;
+  background: #fff9f5;
+}
+
+.payment-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-top: 2px;
+}
+
+/* Notes Section */
+.notes-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.notes-textarea:focus {
+  outline: none;
+  border-color: #ff6b00;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+.notes-textarea:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  color: #999;
+}
+
 /* Actions */
 .preview-actions {
   display: flex;
@@ -1035,6 +1532,118 @@ onMounted(async () => {
 }
 
 .btn-confirm-payment:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Add Address Modal */
+.add-address-modal {
+  max-width: 500px;
+}
+
+.add-address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.form-input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ff6b00;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+.form-input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn-cancel,
+.btn-submit {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #e0e0e0;
+}
+
+.btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-submit {
+  background: #ff6b00;
+  color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #e55a00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+
+.btn-submit:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
@@ -1077,6 +1686,19 @@ onMounted(async () => {
   }
 
   .btn-apply {
+    width: 100%;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-submit {
     width: 100%;
   }
 }

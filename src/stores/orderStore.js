@@ -25,6 +25,14 @@ export const useOrderStore = defineStore('order', () => {
     deliveryMethod.value = method
   }
 
+  const getPreviewData = () => {
+    return previewData.value
+  }
+
+  const getSelectedAddress = () => {
+    return selectedAddress.value
+  }
+
   const clearOrderData = () => {
     previewData.value = null
     selectedAddress.value = null
@@ -41,6 +49,8 @@ export const useOrderStore = defineStore('order', () => {
     setSelectedAddress,
     setVoucherCode,
     setDeliveryMethod,
+    getPreviewData,
+    getSelectedAddress,
     clearOrderData
   }
 })

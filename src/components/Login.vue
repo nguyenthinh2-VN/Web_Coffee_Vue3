@@ -1,6 +1,7 @@
 <!-- File: src/components/Login.vue -->
 <script setup>
-import { ref } from 'vue';
+/* global google */
+import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
 
@@ -11,6 +12,30 @@ const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
+const googleLoading = ref(false);
+
+// Initialize Google Sign-In
+onMounted(() => {
+  if (window.google) {
+    const clientId = process.env.VUE_APP_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.warn('Google Client ID not configured. Please set VUE_APP_GOOGLE_CLIENT_ID in .env.local');
+      return;
+    }
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: handleGoogleLogin
+    });
+    
+    // Render Google Sign-In button
+    google.accounts.id.renderButton(
+      document.getElementById('google-signin-button'),
+      { theme: 'outline', size: 'large', width: '100%' }
+    );
+  } else {
+    console.warn('Google Sign-In script not loaded. Make sure it is included in index.html');
+  }
+});
 
 async function handleLogin() {
   if (!username.value || !password.value) {
@@ -32,6 +57,23 @@ async function handleLogin() {
     isLoading.value = false;
   }
 }
+
+async function handleGoogleLogin(response) {
+  googleLoading.value = true;
+  errorMessage.value = '';
+  try {
+    const googleIdToken = response.credential;
+    await authStore.loginWithGoogle(googleIdToken);
+    console.log('Google login successful, redirecting to:', authStore.returnUrl || '/');
+    router.push(authStore.returnUrl || '/');
+  } catch (error) {
+    errorMessage.value = error.message;
+    console.error('Google login error:', error.message);
+  } finally {
+    googleLoading.value = false;
+  }
+}
+
 </script>
 
 <template>
@@ -54,6 +96,13 @@ async function handleLogin() {
       </button>
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </form>
+
+    <div class="divider">
+      <span>Hoặc</span>
+    </div>
+
+    <div id="google-signin-button" class="google-button-container"></div>
+
     <p>Chưa có tài khoản? <router-link to="/register">Đăng ký ngay</router-link></p>
   </div>
 </template>
@@ -127,5 +176,35 @@ button:disabled {
 
 .forgot-password-link a:hover {
   text-decoration: underline;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.divider span {
+  padding: 0 0.75rem;
+}
+
+.google-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+:deep(.google-button-container button) {
+  width: 100% !important;
 }
 </style>

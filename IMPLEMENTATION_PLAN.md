@@ -130,19 +130,34 @@ Tạo trang xem trước đơn hàng trước khi thanh toán với các chức 
 - Radio button: DELIVERY (mặc định)
 - Có thể mở rộng sau
 
-#### Section 5 - Tóm Tắt Đơn Hàng
+#### Section 5 - Phương Thức Thanh Toán (MỚI)
+- Radio button: COD (Nhận hàng đưa tiền) - mặc định
+- Radio button: VNPAY (Thanh toán online)
+- Lưu vào `paymentMethod`
+
+#### Section 6 - Ghi Chú (MỚI)
+- Textarea nhập ghi chú đơn hàng
+- Lưu vào `notes`
+
+#### Section 7 - Tóm Tắt Đơn Hàng
 - Tạm tính (subtotal)
 - Phí vận chuyển (shippingFee)
 - Giảm giá (discount)
 - **Tổng cộng (totalAmount)**
 
-### Phase 3: Xác Nhận & Thanh Toán
+### Phase 3: Xác Nhận & Tạo Đơn Hàng
 1. Nhấn nút "Xác Nhận & Thanh Toán"
-2. Gọi API: `POST http://localhost:3000/api/orders/preview`
-   - Body: request.json structure
+2. Gọi API: `POST http://localhost:3000/orders/create`
+   - Body: items, deliveryMethod, paymentMethod, addressId, notes, voucherCode
    - Header: `Authorization: Bearer {token}`
-3. Nhận response với giá cuối cùng
-4. Chuyển sang trang Checkout (hiện tại)
+3. Nhận response với `id` của đơn hàng
+4. **Nếu paymentMethod = COD:**
+   - Hiển thị thông báo thành công
+   - Chuyển sang trang Order Success
+5. **Nếu paymentMethod = VNPAY:**
+   - Gọi API: `GET http://localhost:3000/orders/{id}/vnpay-payment`
+   - Nhận `redirectUrl` từ response
+   - Redirect user sang trang thanh toán VNPAY
 
 ---
 
@@ -165,12 +180,31 @@ Tạo trang xem trước đơn hàng trước khi thanh toán với các chức 
 - [x] Implement Section 5 (Tóm tắt)
 - [x] Implement nút "Xác Nhận & Thanh Toán"
 
-### ✅ Phase 3: API Integration
+### ✅ Phase 3: API Integration (Preview)
 - [x] Gọi API preview trước khi thanh toán
 - [x] Xử lý response và hiển thị giá cuối cùng
 - [x] Chuyển hướng sang Checkout
 
-### ✅ Phase 4: UI/UX
+### 🔄 Phase 4: Tạo Đơn Hàng (MỚI)
+- [ ] Thêm Section 5: Phương Thức Thanh Toán (COD/VNPAY)
+- [ ] Thêm Section 6: Ghi Chú
+- [ ] Sửa hàm `confirmAndProceed()` để gọi API `/orders/create`
+- [ ] Xử lý response từ API tạo đơn hàng
+- [ ] Nếu COD: Chuyển sang trang Order Success
+- [ ] Nếu VNPAY: Gọi API `/orders/{id}/vnpay-payment` rồi redirect
+
+### 🔄 Phase 5: Trang Order Success (MỚI)
+- [ ] Tạo component OrderSuccess.vue
+- [ ] Hiển thị thông tin đơn hàng
+- [ ] Nút "Quay lại trang chủ"
+
+### ✅ Phase 6: VNPAY Payment (HOÀN THÀNH)
+- [x] Gọi API `/orders/{id}/vnpay-payment` để lấy redirectUrl
+- [x] Redirect sang VNPAY sandbox
+- [x] Backend xử lý callback từ VNPAY (server-to-server)
+- [x] Backend redirect về OrderSuccess sau khi xác nhận thanh toán
+
+### ✅ Phase 7: UI/UX
 - [x] Styling responsive
 - [x] Loading states
 - [x] Error handling
@@ -206,12 +240,31 @@ Tạo trang xem trước đơn hàng trước khi thanh toán với các chức 
 
 ---
 
-## 🚀 Tiếp Theo (Để Sau)
-- [ ] Cập nhật Checkout.vue để sử dụng orderStore data
+## 🚀 Tiếp Theo (Ưu Tiên)
+
+### Phase 4: Tạo Đơn Hàng (NGAY)
+1. **Thêm UI cho OrderPreview:**
+   - Section 5: Phương Thức Thanh Toán (COD/VNPAY)
+   - Section 6: Ghi Chú
+   - Sửa nút "Xác Nhận & Thanh Toán" → "Tạo Đơn Hàng"
+
+2. **Sửa hàm `confirmAndProceed()`:**
+   - Gọi API `POST /orders/create` thay vì chuyển sang Checkout
+   - Xử lý response và redirect theo paymentMethod
+
+3. **Tạo component OrderSuccess.vue:**
+   - Hiển thị thông tin đơn hàng
+   - Nút "Quay lại trang chủ"
+
+4. **Tạo component VNPayPayment.vue:**
+   - Redirect sang VNPAY sandbox
+   - Xử lý callback
+
+### Để Sau:
 - [ ] Implement API validate voucher
-- [ ] Implement API thêm địa chỉ mới
 - [ ] Thêm toast notifications
 - [ ] Thêm loading skeleton screens
+- [ ] Xử lý VNPAY callback
 
 ---
 

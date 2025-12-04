@@ -89,7 +89,7 @@
                 name="ice-option"
                 class="ice-radio"
               />
-              <span class="ice-name">{{ ice.tenice }}</span>
+              <span class="ice-name">{{ ice.ten_ice }}</span>
             </label>
           </div>
         </div>
@@ -178,14 +178,14 @@ export default {
     const selectedToppings = ref([]); // Ghi chú: Logic chọn topping
     const selectedIce = ref(null); // Ghi chú: Logic chọn độ đá
     const quantity = ref(1); // Ghi chú: Điều khiển số lượng
-    // Ghi chú: Xác định sản phẩm là trà hay cà phê dựa trên danh mục hoặc tên
+    // Ghi chú: Xác định sản phẩm là trà hay cà phê dựa trên category_id
+    // category_id = 1: Cà phê (chỉ có ice)
+    // category_id = 2: Trà sữa (có ice và topping)
     const isTeaProduct = computed(() => {
-      // For now, assume products with 'Trà' or 'Tea' in name are tea products
-      // You can modify this logic based on actual category_id when tea products are added
-      const productName = productStore.currentProduct?.tensp?.toLowerCase() || '';
-      return productName.includes('trà') || productName.includes('tea') || productName.includes('sữa tươi');
+      const categoryId = productStore.currentProduct?.category_id;
+      return categoryId === 2;
     });
-
+    
     // Tính tổng giá tiền (giá gốc + giá size + toppings)
     const totalPrice = computed(() => {
       const basePrice = productStore.currentProduct?.gia || 0;
@@ -221,9 +221,13 @@ export default {
     // Ghi chú: Tải topping và tùy chọn đá từ productStore
     const loadToppingsAndIce = async () => {
       try {
-        // Load toppings and ice options from productStore
-        await productStore.fetchToppings();
+        // Chỉ load ice options cho cả cà phê (category_id = 1) và trà sữa (category_id = 2)
         await productStore.fetchIceOptions();
+        
+        // Chỉ load toppings cho trà sữa (category_id = 2)
+        if (isTeaProduct.value) {
+          await productStore.fetchToppings();
+        }
         
         // Set default ice option
         if (productStore.iceOptions.length > 0) {
@@ -268,7 +272,7 @@ export default {
         toppings: selectedToppingsInfo,
         toppingIds: selectedToppings.value,
         iceOptionId: selectedIce.value,
-        ice: iceInfo?.tenice,
+        ice: iceInfo?.ten_ice,
         price: totalPrice.value,
         quantity: quantity.value // Ghi chú: Sử dụng số lượng đã chọn
       });
@@ -557,6 +561,7 @@ export default {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  color: black
 }
 
 .ice-option {

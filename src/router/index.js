@@ -8,6 +8,10 @@ import ProductDetail from '@/components/ProductDetail.vue';
 import BlogPage from '@/components/blogPage.vue';
 import CartModal from '@/components/CartModal.vue';
 import OrderPreview from '@/components/OrderPreview.vue';
+import OrderSuccess from '@/components/OrderSuccess.vue';
+import PaymentCallback from '@/components/PaymentCallback.vue';
+import MyOrders from '@/components/MyOrders.vue';
+import OrderDetail from '@/components/OrderDetail.vue';
 import Checkout from '@/components/Checkout.vue';
 
 export const pinia = createPinia(); // Xuất pinia để sử dụng trong main.js
@@ -80,11 +84,46 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/order-success/:orderId?',
+      name: 'OrderSuccess',
+      component: OrderSuccess,
+      // Ghi chú: Route cho trang thành công - bắt buộc đăng nhập
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/payment-callback',
+      name: 'PaymentCallback',
+      component: PaymentCallback,
+      // Ghi chú: Route cho callback từ VNPAY - bắt buộc đăng nhập
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/my-orders',
+      name: 'MyOrders',
+      component: MyOrders,
+      // Ghi chú: Route cho danh sách đơn hàng - bắt buộc đăng nhập
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/order-detail/:orderId',
+      name: 'OrderDetail',
+      component: OrderDetail,
+      // Ghi chú: Route cho chi tiết đơn hàng - bắt buộc đăng nhập
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/checkout',
       name: 'Checkout',
       component: Checkout,
       // Ghi chú: Route cho trang thanh toán - bắt buộc đăng nhập
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/payment-success',
+      name: 'PaymentSuccess',
+      component: () => import('@/components/PaymentSuccess.vue'),
+      // Ghi chú: Route cho trang thành công thanh toán - không bắt buộc đăng nhập
+      meta: { requiresAuth: false }
     }
   ]
 });

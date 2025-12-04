@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   LOGOUT: '/auth/logout',
   PROFILE: '/auth/profile',
   FORGOT_PASSWORD: '/auth/forgot-password', // Ghi chú: Endpoint gửi OTP
+  GOOGLE_LOGIN: '/auth/google-login', // Ghi chú: Endpoint đăng nhập Google
   VERIFY_OTP: '/auth/verify-otp', // Ghi chú: Endpoint xác minh OTP
   RESET_PASSWORD: '/auth/reset-password', // Ghi chú: Endpoint đặt lại mật khẩu
   USERS: '/users',

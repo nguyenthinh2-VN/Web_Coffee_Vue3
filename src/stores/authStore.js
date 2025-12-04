@@ -257,6 +257,44 @@ export const useAuthStore = defineStore('auth', {
         const errorMessage = error.response?.data?.message || 'Đặt lại mật khẩu thất bại. Vui lòng thử lại.';
         throw new Error(errorMessage);
       }
+    },
+
+    // Ghi chú: Đăng nhập bằng Google
+    async loginWithGoogle(googleIdToken) {
+      try {
+        console.log('authStore.loginWithGoogle called');
+        
+        const response = await axios.post(getApiUrl(API_ENDPOINTS.GOOGLE_LOGIN), {
+          token: googleIdToken
+        });
+
+        const { data } = response.data;
+        
+        if (!data || !data.accessToken || !data.user) {
+          throw new Error('Invalid response from server');
+        }
+
+        // Lưu tokens và user info
+        this.accessToken = data.accessToken;
+        this.refreshToken = data.refreshToken;
+        this.user = data.user;
+        this.isLoggedIn = true;
+        
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        console.log('Google login successful:', { email: data.user.email });
+        return data;
+      } catch (error) {
+        console.error('Google login failed:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        const errorMessage = error.response?.data?.message || 'Đăng nhập Google thất bại. Vui lòng thử lại.';
+        throw new Error(errorMessage);
+      }
     }
   },
 
