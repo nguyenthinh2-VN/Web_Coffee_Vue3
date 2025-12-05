@@ -1,7 +1,16 @@
 <template>
   <div class="payment-success-wrapper">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="loading-container">
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <h2 class="loading-title">Đang xử lý...</h2>
+        <p class="loading-subtitle">Vui lòng đợi trong giây lát, chúng tôi đang xác nhận đơn hàng của bạn.</p>
+      </div>
+    </div>
+
     <!-- Success State -->
-    <div v-if="isSuccess" class="success-container">
+    <div v-else-if="isSuccess" class="success-container">
       <div class="success-content">
         <!-- Animated Success Icon -->
         <div class="icon-container">
@@ -81,6 +90,7 @@ import { getApiUrl } from '@/api';
 const router = useRouter();
 const route = useRoute();
 
+const isLoading = ref(true);
 const isSuccess = ref(false);
 const responseCode = ref('');
 const orderInfo = ref('');
@@ -130,7 +140,8 @@ const callVnpayCallback = async () => {
       response: error.response?.data,
       status: error.response?.status,
     });
-    // Không throw error, vì trang vẫn hiển thị được
+    // Trả về null hoặc object lỗi để xử lý tiếp
+    return null;
   }
 };
 
@@ -148,17 +159,32 @@ onMounted(async () => {
     decodedOrderInfo.value = decodeOrderInfo(vnpOrderInfo);
   }
 
-  // Kiểm tra mã response
-  if (vnpResponseCode === '00') {
-    isSuccess.value = true;
-    console.log('Payment successful:', { vnpOrderInfo, decodedOrderInfo: decodedOrderInfo.value, vnpTxnRef });
-    
+  // Bắt đầu loading
+  isLoading.value = true;
+
+  try {
     // Gọi API vnpay-callback để xác nhận thanh toán với backend
-    await callVnpayCallback();
-  } else {
+    const result = await callVnpayCallback();
+
+    if (result && result.success) {
+      isSuccess.value = true;
+      console.log('Payment confirmed successful by backend');
+    } else {
+      isSuccess.value = false;
+      // Nếu backend trả về lỗi hoặc không gọi được, fallback hiển thị lỗi dựa trên response code từ URL hoặc mặc định
+      errorMessage.value = errorMessages[vnpResponseCode] || 'Thanh toán thất bại hoặc chưa được xác nhận. Vui lòng kiểm tra lại.';
+      console.log('Payment failed or not confirmed:', { vnpResponseCode, errorMessage: errorMessage.value });
+    }
+  } catch (e) {
+    console.error('Unexpected error during payment verification:', e);
     isSuccess.value = false;
-    errorMessage.value = errorMessages[vnpResponseCode] || 'Thanh toán thất bại. Vui lòng thử lại.';
-    console.log('Payment failed:', { vnpResponseCode, errorMessage: errorMessage.value });
+    errorMessage.value = 'Đã có lỗi xảy ra trong quá trình xác nhận thanh toán.';
+  } finally {
+    // Kết thúc loading sau khi xử lý xong
+    // Thêm delay nhỏ để người dùng kịp nhìn thấy hiệu ứng loading nếu API trả về quá nhanh (optional, nhưng tốt cho UX)
+    setTimeout(() => {
+      isLoading.value = false;
+    }, 1000); 
   }
 });
 
@@ -184,6 +210,58 @@ const goToCheckout = () => {
   justify-content: center;
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== LOADING CONTAINER ===== */
+.loading-container {
+  width: 100%;
+  max-width: 550px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.loading-content {
+  background: white;
+  border-radius: 20px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff6b00; /* Brand color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 25px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.loading-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ===== SUCCESS CONTAINER ===== */
@@ -467,7 +545,8 @@ const goToCheckout = () => {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .success-content,
-  .error-content {
+  .error-content,
+  .loading-content {
     padding: 45px 25px;
   }
 
@@ -506,7 +585,8 @@ const goToCheckout = () => {
   }
 
   .success-content,
-  .error-content {
+  .error-content,
+  .loading-content {
     padding: 35px 20px;
     border-radius: 16px;
   }

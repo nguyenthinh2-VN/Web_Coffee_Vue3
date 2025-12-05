@@ -4,7 +4,7 @@
   html,
   body {
     position: relative;
-    margin: 0;
+    margin: 0 ;
     padding: 0;
   }
   
@@ -23,7 +23,7 @@
   
   .swiper {
     width: 100%;
-    height: 464px;
+    height: 50rem;
   }
   
   .swiper-slide {
@@ -40,6 +40,26 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    margin-top: 7rem;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .swiper {
+      height: 431px;
+    }
+    .swiper-slide img {
+      object-fit: contain;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .swiper {
+      height: 431px;
+    }
+    .swiper-slide img {
+      object-fit: cover;
+    }
   }
   
   /* Remove unnecessary styles */

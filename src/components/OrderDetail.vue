@@ -99,52 +99,54 @@
         </div>
       </div>
 
-      <!-- Order Summary -->
-      <div class="section">
-        <h2>Tóm Tắt Đơn Hàng</h2>
-        <div class="summary-info">
-          <div class="summary-row">
-            <span class="label">Tạm tính:</span>
-            <span class="value">{{ formatPrice(calculateSubtotal()) }}</span>
-          </div>
-          <div class="summary-row">
-            <span class="label">Thuế:</span>
-            <span class="value">{{ formatPrice(order.tax) }}</span>
-          </div>
-          <div class="summary-row">
-            <span class="label">Phí giao hàng:</span>
-            <span class="value">{{ formatPrice(order.shippingFee) }}</span>
-          </div>
-          <div v-if="order.discount > 0" class="summary-row discount">
-            <span class="label">Giảm giá:</span>
-            <span class="value">-{{ formatPrice(order.discount) }}</span>
-          </div>
-          <div class="summary-row total">
-            <span class="label">Tổng cộng:</span>
-            <span class="value">{{ formatPrice(order.totalAmount) }}</span>
+      <div class="bottom-section">
+        <!-- Order Summary -->
+        <div class="section">
+          <h2>Tóm Tắt Đơn Hàng</h2>
+          <div class="summary-info">
+            <div class="summary-row">
+              <span class="label">Tạm tính:</span>
+              <span class="value">{{ formatPrice(calculateSubtotal()) }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Thuế:</span>
+              <span class="value">{{ formatPrice(order.tax) }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Phí giao hàng:</span>
+              <span class="value">{{ formatPrice(order.shippingFee) }}</span>
+            </div>
+            <div v-if="order.discount > 0" class="summary-row discount">
+              <span class="label">Giảm giá:</span>
+              <span class="value">-{{ formatPrice(order.discount) }}</span>
+            </div>
+            <div class="summary-row total">
+              <span class="label">Tổng cộng:</span>
+              <span class="value">{{ formatPrice(order.totalAmount) }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Order Info -->
-      <div class="section">
-        <h2>Thông Tin Đơn Hàng</h2>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Phương thức giao:</span>
-            <span class="value">{{ getDeliveryLabel(order.deliveryMethod) }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Phương thức thanh toán:</span>
-            <span class="value">{{ order.paymentMethod }}</span>
-          </div>
-          <div v-if="order.voucherCode" class="info-item">
-            <span class="label">Mã voucher:</span>
-            <span class="value">{{ order.voucherCode }}</span>
-          </div>
-          <div v-if="order.notes" class="info-item full-width">
-            <span class="label">Ghi chú:</span>
-            <span class="value">{{ order.notes }}</span>
+        <!-- Order Info -->
+        <div class="section">
+          <h2>Thông Tin Đơn Hàng</h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Phương thức giao:</span>
+              <span class="value">{{ getDeliveryLabel(order.deliveryMethod) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Phương thức thanh toán:</span>
+              <span class="value">{{ order.paymentMethod }}</span>
+            </div>
+            <div v-if="order.voucherCode" class="info-item">
+              <span class="label">Mã voucher:</span>
+              <span class="value">{{ order.voucherCode }}</span>
+            </div>
+            <div v-if="order.notes" class="info-item full-width">
+              <span class="label">Ghi chú:</span>
+              <span class="value">{{ order.notes }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -341,6 +343,7 @@ onMounted(() => {
   padding: 60px 20px;
   background: white;
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .spinner {
@@ -373,6 +376,7 @@ onMounted(() => {
   background: white;
   border-radius: 12px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .error-state i {
@@ -403,7 +407,7 @@ onMounted(() => {
   background: white;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .section h2 {
@@ -459,18 +463,30 @@ onMounted(() => {
 }
 
 .order-status.pending {
-  background: #fff3cd;
-  color: #856404;
+  background: #ffecb3; /* Light yellow */
+  color: #664d03; /* Darker yellow text */
 }
 
-.order-status.confirmed {
-  background: #d4edda;
-  color: #155724;
-}
-
+.order-status.confirmed,
+.order-status.delivered,
 .order-status.paid {
-  background: #d4edda;
-  color: #155724;
+  background: #d4edda; /* Light green */
+  color: #0f5132; /* Darker green text */
+}
+
+.order-status.processing {
+  background: #cfe2ff; /* Light blue */
+  color: #055160; /* Darker blue text */
+}
+
+.order-status.shipped {
+  background: #cff4fc; /* Light cyan */
+  color: #0a58ca; /* Darker cyan text */
+}
+
+.order-status.cancelled {
+  background: #f8d7da; /* Light red */
+  color: #842029; /* Darker red text */
 }
 
 .header-info {
@@ -505,9 +521,9 @@ onMounted(() => {
 .address-row {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 6px;
+  padding: 10px 15px;
+  background: #f0f2f5; /* Slightly darker than f8f9fa */
+  border-radius: 8px;
 }
 
 .address-row .label {
@@ -533,8 +549,8 @@ onMounted(() => {
 .table-header {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  gap: 15px;
-  padding: 15px;
+  gap: 10px; /* Reduced padding */
+  padding: 10px 15px; /* Reduced padding */
   background: #f8f9fa;
   font-weight: 600;
   color: #333;
@@ -544,8 +560,8 @@ onMounted(() => {
 .table-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  gap: 15px;
-  padding: 15px;
+  gap: 10px; /* Reduced padding */
+  padding: 10px 15px; /* Reduced padding */
   border-bottom: 1px solid #e0e0e0;
   align-items: center;
 }
@@ -583,6 +599,13 @@ onMounted(() => {
   color: #333;
 }
 
+/* Bottom Section */
+.bottom-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
 /* Summary Info */
 .summary-info {
   display: flex;
@@ -593,9 +616,9 @@ onMounted(() => {
 .summary-row {
   display: flex;
   justify-content: space-between;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 6px;
+  padding: 12px 15px;
+  background: #f0f2f5; /* Slightly darker than f8f9fa */
+  border-radius: 8px;
 }
 
 .summary-row .label {
@@ -617,6 +640,7 @@ onMounted(() => {
   color: white;
   padding: 15px;
   font-size: 1.1rem;
+  border-radius: 8px; /* Ensure total row also has border-radius */
 }
 
 .summary-row.total .label,
@@ -635,9 +659,9 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 6px;
+  padding: 12px 15px;
+  background: #f0f2f5; /* Slightly darker than f8f9fa */
+  border-radius: 8px;
 }
 
 .info-item.full-width {
@@ -687,14 +711,15 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background: #f0f0f0;
+  background: #e9ecef; /* Softer background */
   color: #333;
-  border: 1px solid #ddd;
+  border: 1px solid #ced4da; /* Softer border */
 }
 
 .btn-secondary:hover {
-  background: #e0e0e0;
-  border-color: #999;
+  background: #dee2e6; /* Slightly darker on hover */
+  border-color: #adb5bd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
 }
 
 /* No Data */
@@ -702,8 +727,8 @@ onMounted(() => {
   text-align: center;
   color: #999;
   padding: 20px;
-  background: #f8f9fa;
-  border-radius: 6px;
+  background: #f0f2f5; /* Consistent background */
+  border-radius: 8px;
 }
 
 /* Responsive */
@@ -729,6 +754,7 @@ onMounted(() => {
   .table-row {
     grid-template-columns: 1fr;
     gap: 8px;
+    padding: 8px 15px; /* Adjusted for smaller screens */
   }
 
   .col-size,
@@ -736,6 +762,10 @@ onMounted(() => {
   .col-price,
   .col-total {
     text-align: left;
+  }
+
+  .bottom-section {
+    grid-template-columns: 1fr; /* Stack sections on small screens */
   }
 
   .info-grid {

@@ -11,11 +11,12 @@
       :modules="modules"
       class="mySwiper"
     >
-      <swiper-slide><img src="../assets/img/slide1.jpg" alt="Slide 1" /></swiper-slide>
-      <swiper-slide><img src="../assets/img/slide2.jpg" alt="Slide 2" /></swiper-slide>
-      <swiper-slide><img src="../assets/img/slide3.jpg" alt="Slide 3" /></swiper-slide>
+      <swiper-slide><img :src="isMobile ? slides[0].mobile : slides[0].desktop" alt="Slide 1" /></swiper-slide>
+      <swiper-slide><img :src="isMobile ? slides[1].mobile : slides[1].desktop" alt="Slide 2" /></swiper-slide>
+      <swiper-slide><img :src="isMobile ? slides[2].mobile : slides[2].desktop" alt="Slide 3" /></swiper-slide>
     </swiper>
   </div>
+
 
   <!-- Product Section with White Background -->
   <div class="product-section">
@@ -40,10 +41,17 @@
       </div>
     </div>
   </div>
+  
+  
+  <!-- Story Section -->
+  <story-section />
+
+  <!-- Featured Products Section -->
+  <featured-products />
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
 // Imports remain the same
@@ -57,6 +65,8 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 // Component imports
 import ProductHome from "./ProductHome.vue";
 import ProductBanner from "./ProductBanner.vue";
+import StorySection from "./StorySection.vue";
+import FeaturedProducts from "./FeaturedProducts.vue";
 
 // API constants
 import { getApiUrl, API_ENDPOINTS } from "./../api.js";
@@ -67,12 +77,36 @@ export default {
     SwiperSlide,
     ProductHome,
     ProductBanner,
+    StorySection,
+    FeaturedProducts,
   },
   setup() {
     // Reactive data
     const products = ref([]);
     const loading = ref(false);
     const error = ref(null);
+    const isMobile = ref(window.innerWidth <= 768);
+
+    // Slides with desktop and mobile versions
+    const slides = [
+      {
+        desktop: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_1_img.jpg?v=2195', // Desktop image
+        mobile: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_1_mb.jpg?v=2195' // Mobile image
+      },
+      {
+        desktop: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_2_img.jpg?v=2195',
+        mobile: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_2_mb.jpg?v=2195'
+      },
+      {
+        desktop: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_3_img.jpg?v=2195',
+        mobile: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_3_mb.jpg?v=2195'
+      }
+    ];
+
+    // Handle window resize
+    const handleResize = () => {
+      isMobile.value = window.innerWidth <= 768;
+    };
 
     // Fetch products from API
     const fetchProducts = async () => {
@@ -82,8 +116,8 @@ export default {
         
         const response = await axios.get(getApiUrl(API_ENDPOINTS.PRODUCTS));
         
-        // Chỉ lấy 4 phần tử đầu tiên
-        products.value = response.data.data.slice(0, 4);
+        // Chỉ lấy 4 phần tử đầu tiên - API trả về data.data.data
+        products.value = response.data.data.data.slice(0, 4);
         
         console.log('Fetched products:', products.value);
       } catch (err) {
@@ -97,6 +131,12 @@ export default {
     // Fetch products when component mounts
     onMounted(() => {
       fetchProducts();
+      window.addEventListener('resize', handleResize);
+    });
+
+    // Cleanup
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize);
     });
 
     return {
@@ -104,7 +144,9 @@ export default {
       products,
       loading,
       error,
-      fetchProducts
+      fetchProducts,
+      isMobile,
+      slides
     };
   },
 };
