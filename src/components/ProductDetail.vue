@@ -6,7 +6,7 @@
         <div class="product-image">
           <img :src="product.hinh" :alt="product.tensp" />
         </div>
-        
+
         <!-- Ghi chú: Component đánh giá sao riêng biệt dưới hình ảnh -->
         <ProductRating :productId="product.id" />
       </div>
@@ -17,7 +17,7 @@
         <div class="product-price">{{ formatPrice(totalPrice) }}</div>
 
         <!-- Ghi chú: UI động dựa trên loại sản phẩm - Logic phân biệt Cà phê và Trà -->
-        
+
         <!-- Size Selection for Tea Products -->
         <div v-if="isTeaProduct" class="size-selection">
           <h3>Chọn size (bắt buộc)</h3>
@@ -38,7 +38,9 @@
               </div>
               <div class="size-info">
                 <span class="size-name">{{ size.tensize }}</span>
-                <span class="size-price" v-if="size.gia > 0">+{{ formatPrice(size.gia) }}</span>
+                <span class="size-price" v-if="size.gia > 0"
+                  >+{{ formatPrice(size.gia) }}</span
+                >
               </div>
             </button>
           </div>
@@ -67,7 +69,9 @@
               />
               <div class="topping-info">
                 <span class="topping-name">{{ topping.tentopping }}</span>
-                <span class="topping-price">+{{ formatPrice(topping.gia) }}</span>
+                <span class="topping-price"
+                  >+{{ formatPrice(topping.gia) }}</span
+                >
               </div>
             </label>
           </div>
@@ -77,11 +81,7 @@
         <div class="ice-selection">
           <h3>Chọn độ đá (bắt buộc)</h3>
           <div class="ice-options">
-            <label
-              v-for="ice in iceOptions"
-              :key="ice.id"
-              class="ice-option"
-            >
+            <label v-for="ice in iceOptions" :key="ice.id" class="ice-option">
               <input
                 type="radio"
                 :value="ice.id"
@@ -98,24 +98,24 @@
         <div class="quantity-selection">
           <h3>Số lượng</h3>
           <div class="quantity-controls">
-            <button 
-              type="button" 
-              class="btn btn-outline-secondary quantity-btn" 
+            <button
+              type="button"
+              class="btn btn-outline-secondary quantity-btn"
               @click="decreaseQuantity"
               :disabled="quantity <= 1"
             >
               <i class="bi bi-dash"></i>
             </button>
-            <input 
-              type="number" 
-              class="form-control quantity-input" 
+            <input
+              type="number"
+              class="form-control quantity-input"
               v-model.number="quantity"
               min="1"
               max="99"
             />
-            <button 
-              type="button" 
-              class="btn btn-outline-secondary quantity-btn" 
+            <button
+              type="button"
+              class="btn btn-outline-secondary quantity-btn"
               @click="increaseQuantity"
               :disabled="quantity >= 99"
             >
@@ -131,9 +131,6 @@
           </n-icon>
           Đặt giao tận nơi
         </button>
-
-
-    
       </div>
     </div>
 
@@ -146,19 +143,19 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from 'vue';
-import SlideItem from './SlideItem.vue';
-import ProductRating from './ProductRating.vue';
-import { NIcon } from 'naive-ui';
-import { useRoute } from 'vue-router';
-import { useProductStore } from '../stores/productStore.js';
-import { useCartStore } from '../stores/cart.js';
+import { ref, computed, onMounted, watch } from "vue";
+import SlideItem from "./SlideItem.vue";
+import ProductRating from "./ProductRating.vue";
+import { NIcon } from "naive-ui";
+import { useRoute } from "vue-router";
+import { useProductStore } from "../stores/productStore.js";
+import { useCartStore } from "../stores/cart.js";
 import {
   CafeOutline,
   BeerOutline,
   CoffeeOutline,
-  CartOutline
-} from '@vicons/ionicons5';
+  CartOutline,
+} from "@vicons/ionicons5";
 
 export default {
   components: {
@@ -168,7 +165,7 @@ export default {
     CafeOutline,
     BeerOutline,
     CoffeeOutline,
-    CartOutline
+    CartOutline,
   },
   setup() {
     const route = useRoute();
@@ -185,18 +182,18 @@ export default {
       const categoryId = productStore.currentProduct?.category_id;
       return categoryId === 2;
     });
-    
+
     // Tính tổng giá tiền (giá gốc + giá size + toppings)
     const totalPrice = computed(() => {
       const basePrice = productStore.currentProduct?.gia || 0;
-      const sizePrice = isTeaProduct.value ? (selectedSize.value?.gia || 0) : 0;
-      
+      const sizePrice = isTeaProduct.value ? selectedSize.value?.gia || 0 : 0;
+
       // Tính giá topping
       const toppingPrice = selectedToppings.value.reduce((total, toppingId) => {
-        const topping = productStore.toppings.find(t => t.id === toppingId);
+        const topping = productStore.toppings.find((t) => t.id === toppingId);
         return total + (topping?.gia || 0);
       }, 0);
-      
+
       return basePrice + sizePrice + toppingPrice;
     });
 
@@ -223,18 +220,18 @@ export default {
       try {
         // Chỉ load ice options cho cả cà phê (category_id = 1) và trà sữa (category_id = 2)
         await productStore.fetchIceOptions();
-        
+
         // Chỉ load toppings cho trà sữa (category_id = 2)
         if (isTeaProduct.value) {
           await productStore.fetchToppings();
         }
-        
+
         // Set default ice option
         if (productStore.iceOptions.length > 0) {
           selectedIce.value = productStore.iceOptions[0].id;
         }
       } catch (error) {
-        console.error('Error loading toppings and ice options:', error);
+        console.error("Error loading toppings and ice options:", error);
       }
     };
 
@@ -242,24 +239,28 @@ export default {
     const addToCart = () => {
       // Validation based on product type
       if (isTeaProduct.value && !selectedSize.value) {
-        alert('Vui lòng chọn size trước khi thêm vào giỏ hàng!');
+        alert("Vui lòng chọn size trước khi thêm vào giỏ hàng!");
         return;
       }
-      
+
       if (!selectedIce.value) {
-        alert('Vui lòng chọn độ đá trước khi thêm vào giỏ hàng!');
+        alert("Vui lòng chọn độ đá trước khi thêm vào giỏ hàng!");
         return;
       }
 
       // Get selected toppings info using productStore.toppings
-      const selectedToppingsInfo = selectedToppings.value.map(toppingId => {
-        const topping = productStore.toppings.find(t => t.id === toppingId);
-        return topping ? topping.tentopping : '';
-      }).filter(Boolean);
-      
+      const selectedToppingsInfo = selectedToppings.value
+        .map((toppingId) => {
+          const topping = productStore.toppings.find((t) => t.id === toppingId);
+          return topping ? topping.tentopping : "";
+        })
+        .filter(Boolean);
+
       // Get ice info using productStore.iceOptions
-      const iceInfo = productStore.iceOptions.find(ice => ice.id === selectedIce.value);
-      
+      const iceInfo = productStore.iceOptions.find(
+        (ice) => ice.id === selectedIce.value
+      );
+
       // Get size info
       const sizeInfo = isTeaProduct.value ? selectedSize.value : null;
 
@@ -267,27 +268,26 @@ export default {
         id: productStore.currentProduct.id,
         name: productStore.currentProduct.tensp,
         image: productStore.currentProduct.hinh,
-        size: isTeaProduct.value ? selectedSize.value?.tensize : 'Vừa',
+        size: isTeaProduct.value ? selectedSize.value?.tensize : "Vừa",
         sizeId: sizeInfo?.id || 1,
         toppings: selectedToppingsInfo,
         toppingIds: selectedToppings.value,
         iceOptionId: selectedIce.value,
         ice: iceInfo?.ten_ice,
         price: totalPrice.value,
-        quantity: quantity.value // Ghi chú: Sử dụng số lượng đã chọn
+        quantity: quantity.value, // Ghi chú: Sử dụng số lượng đã chọn
       });
-      alert('✅ Đã thêm sản phẩm vào giỏ hàng!');
+      alert("✅ Đã thêm sản phẩm vào giỏ hàng!");
     };
-
 
     // Fetch data
     const fetchData = async () => {
       try {
         const productId = route.params.id;
-        console.log('Fetching product with ID:', productId);
-        
+        console.log("Fetching product with ID:", productId);
+
         if (!productId) {
-          console.error('No product ID provided');
+          console.error("No product ID provided");
           return;
         }
 
@@ -295,12 +295,14 @@ export default {
         await productStore.fetchProductById(productId);
         await productStore.fetchSizes();
         await loadToppingsAndIce(); // Load toppings and ice options
-        
+
         if (productStore.currentProduct) {
-          await productStore.fetchRelatedProducts(productStore.currentProduct.category_id);
+          await productStore.fetchRelatedProducts(
+            productStore.currentProduct.category_id
+          );
         }
       } catch (error) {
-        console.error('Error fetching product details:', error);
+        console.error("Error fetching product details:", error);
       }
     };
 
@@ -309,7 +311,7 @@ export default {
       () => route.params.id,
       (newId, oldId) => {
         if (newId && newId !== oldId) {
-          console.log('Route ID changed from', oldId, 'to', newId);
+          console.log("Route ID changed from", oldId, "to", newId);
           selectedSize.value = null; // Reset selected size
           fetchData();
         }
@@ -318,7 +320,7 @@ export default {
     );
 
     onMounted(() => {
-      console.log('Component mounted with route params:', route.params);
+      console.log("Component mounted with route params:", route.params);
     });
 
     return {
@@ -342,9 +344,9 @@ export default {
       selectSize,
       increaseQuantity, // Ghi chú: Hàm điều khiển số lượng
       decreaseQuantity,
-      addToCart
+      addToCart,
     };
-  }
+  },
 };
 </script>
 
@@ -561,7 +563,7 @@ export default {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  color: black
+  color: black;
 }
 
 .ice-option {
@@ -689,7 +691,6 @@ export default {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
 }
-
 
 .related-products {
   border-top: 1px solid #eee;

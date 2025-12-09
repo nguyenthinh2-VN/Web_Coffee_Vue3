@@ -12,7 +12,6 @@ import OrderSuccess from '@/components/OrderSuccess.vue';
 import PaymentCallback from '@/components/PaymentCallback.vue';
 import MyOrders from '@/components/MyOrders.vue';
 import OrderDetail from '@/components/OrderDetail.vue';
-import Checkout from '@/components/Checkout.vue';
 
 export const pinia = createPinia(); // Xuất pinia để sử dụng trong main.js
 
@@ -72,6 +71,11 @@ const router = createRouter({
       component: ProductDetail
     },
     {
+      path: '/product/:id/reviews',
+      name: 'ProductReviews',
+      component: () => import('@/components/ProductReviews.vue')
+    },
+    {
         path: '/cart',
         name: 'Cart',
         component: CartModal
@@ -109,13 +113,6 @@ const router = createRouter({
       name: 'OrderDetail',
       component: OrderDetail,
       // Ghi chú: Route cho chi tiết đơn hàng - bắt buộc đăng nhập
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/checkout',
-      name: 'Checkout',
-      component: Checkout,
-      // Ghi chú: Route cho trang thanh toán - bắt buộc đăng nhập
       meta: { requiresAuth: true }
     },
     {

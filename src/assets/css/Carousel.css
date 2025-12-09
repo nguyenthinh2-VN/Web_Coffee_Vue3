@@ -1,72 +1,46 @@
 #app {
-    height: 100%;
-  }
-  html,
-  body {
-    position: relative;
-    margin: 0 ;
-    padding: 0;
-  }
-  
-  body {
+  height: 100%;
+}
+html,
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
 
-    font-family:
-      Helvetica Neue,
-      Helvetica,
-      Arial,
-      sans-serif;
-    font-size: 14px;
-    color: #fff;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .swiper {
-    width: 100%;
-    height: 50rem;
-  }
-  
-  .swiper-slide {
-    text-align: center;
-    font-size: 18px;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .swiper-slide img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    margin-top: 7rem;
-  }
-  
-  /* Mobile responsive */
-  @media (max-width: 768px) {
-    .swiper {
-      height: 431px;
-    }
-    .swiper-slide img {
-      object-fit: contain;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .swiper {
-      height: 431px;
-    }
-    .swiper-slide img {
-      object-fit: cover;
-    }
-  }
-  
-  /* Remove unnecessary styles */
-  html,
-  body {
-    position: relative;
-    margin: 0;
-    padding: 0;
-  }
-  
+body {
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.swiper {
+  width: 100%;
+  height: 50rem;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Remove unnecessary styles */
+html,
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}

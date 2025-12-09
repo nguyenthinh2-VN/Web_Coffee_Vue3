@@ -11,38 +11,48 @@
       :modules="modules"
       class="mySwiper"
     >
-      <swiper-slide><img :src="isMobile ? slides[0].mobile : slides[0].desktop" alt="Slide 1" /></swiper-slide>
-      <swiper-slide><img :src="isMobile ? slides[1].mobile : slides[1].desktop" alt="Slide 2" /></swiper-slide>
-      <swiper-slide><img :src="isMobile ? slides[2].mobile : slides[2].desktop" alt="Slide 3" /></swiper-slide>
+      <swiper-slide
+        ><img
+          :src="isMobile ? slides[0].mobile : slides[0].desktop"
+          alt="Slide 1"
+      /></swiper-slide>
+      <swiper-slide
+        ><img
+          :src="isMobile ? slides[1].mobile : slides[1].desktop"
+          alt="Slide 2"
+      /></swiper-slide>
+      <swiper-slide
+        ><img
+          :src="isMobile ? slides[2].mobile : slides[2].desktop"
+          alt="Slide 3"
+      /></swiper-slide>
     </swiper>
   </div>
-
 
   <!-- Product Section with White Background -->
   <div class="product-section">
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner">Đang tải sản phẩm...</div>
     </div>
-    
+
     <div v-else-if="error" class="error-container">
       <div class="error-message">{{ error }}</div>
       <button @click="fetchProducts" class="retry-button">Thử lại</button>
     </div>
-    
+
     <div v-else class="product-grid">
       <!-- Banner takes full width on top -->
       <div class="grid-banner">
         <product-banner />
       </div>
-      
+
       <!-- Product cards from API -->
       <div v-for="product in products" :key="product.id" class="grid-card">
         <product-home :product="product" />
       </div>
     </div>
   </div>
-  
-  
+
   <!-- Story Section -->
   <story-section />
 
@@ -51,8 +61,8 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, onUnmounted } from "vue";
+import axios from "axios";
 
 // Imports remain the same
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -90,17 +100,23 @@ export default {
     // Slides with desktop and mobile versions
     const slides = [
       {
-        desktop: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_1_img.jpg?v=2195', // Desktop image
-        mobile: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_1_mb.jpg?v=2195' // Mobile image
+        desktop:
+          "https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_1_img.jpg?v=2195", // Desktop image
+        mobile:
+          "https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_1_mb.jpg?v=2195", // Mobile image
       },
       {
-        desktop: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_2_img.jpg?v=2195',
-        mobile: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_2_mb.jpg?v=2195'
+        desktop:
+          "https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_2_img.jpg?v=2195",
+        mobile:
+          "https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_2_mb.jpg?v=2195",
       },
       {
-        desktop: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_3_img.jpg?v=2195',
-        mobile: 'https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_3_mb.jpg?v=2195'
-      }
+        desktop:
+          "https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_3_img.jpg?v=2195",
+        mobile:
+          "https://cdn.hstatic.net/themes/1000075078/1001392287/14/slide_3_mb.jpg?v=2195",
+      },
     ];
 
     // Handle window resize
@@ -113,16 +129,16 @@ export default {
       try {
         loading.value = true;
         error.value = null;
-        
+
         const response = await axios.get(getApiUrl(API_ENDPOINTS.PRODUCTS));
-        
+
         // Chỉ lấy 4 phần tử đầu tiên - API trả về data.data.data
         products.value = response.data.data.data.slice(0, 4);
-        
-        console.log('Fetched products:', products.value);
+
+        console.log("Fetched products:", products.value);
       } catch (err) {
-        error.value = 'Không thể tải sản phẩm. Vui lòng thử lại.';
-        console.error('Error fetching products:', err);
+        error.value = "Không thể tải sản phẩm. Vui lòng thử lại.";
+        console.error("Error fetching products:", err);
       } finally {
         loading.value = false;
       }
@@ -131,12 +147,12 @@ export default {
     // Fetch products when component mounts
     onMounted(() => {
       fetchProducts();
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
     });
 
     // Cleanup
     onUnmounted(() => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     });
 
     return {
@@ -146,7 +162,7 @@ export default {
       error,
       fetchProducts,
       isMobile,
-      slides
+      slides,
     };
   },
 };
@@ -168,12 +184,12 @@ export default {
   grid-template-columns: 2fr 1fr 1fr; /* Banner chiếm 2 phần, mỗi card 1 phần */
   grid-template-rows: auto auto;
   grid-template-areas:
-    'banner card1 card2'
-    'banner card3 card4';
+    "banner card1 card2"
+    "banner card3 card4";
 }
 
-.grid-banner { 
-  grid-area: banner; 
+.grid-banner {
+  grid-area: banner;
   height: 100%;
 }
 
@@ -182,22 +198,30 @@ export default {
   align-items: stretch;
 }
 
-.grid-card:nth-child(2) { grid-area: card1; }
-.grid-card:nth-child(3) { grid-area: card2; }
-.grid-card:nth-child(4) { grid-area: card3; }
-.grid-card:nth-child(5) { grid-area: card4; }
+.grid-card:nth-child(2) {
+  grid-area: card1;
+}
+.grid-card:nth-child(3) {
+  grid-area: card2;
+}
+.grid-card:nth-child(4) {
+  grid-area: card3;
+}
+.grid-card:nth-child(5) {
+  grid-area: card4;
+}
 
 /* Tablet Layout */
 @media (max-width: 1024px) {
   .product-grid {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      'banner banner'
-      'card1 card2'
-      'card3 card4';
+      "banner banner"
+      "card1 card2"
+      "card3 card4";
     gap: 16px;
   }
-  
+
   .grid-banner {
     height: 200px;
   }
@@ -214,23 +238,31 @@ export default {
     display: grid !important; /* Force grid */
     grid-template-columns: 1fr 1fr !important; /* Force 2 columns */
     grid-template-areas:
-      'banner banner'
-      'card1 card2'
-      'card3 card4' !important;
+      "banner banner"
+      "card1 card2"
+      "card3 card4" !important;
     gap: 12px;
     width: 100%;
   }
-  
+
   .grid-banner {
     height: 150px;
     grid-area: banner !important;
   }
-  
-  .grid-card:nth-child(2) { grid-area: card1 !important; }
-  .grid-card:nth-child(3) { grid-area: card2 !important; }
-  .grid-card:nth-child(4) { grid-area: card3 !important; }
-  .grid-card:nth-child(5) { grid-area: card4 !important; }
-  
+
+  .grid-card:nth-child(2) {
+    grid-area: card1 !important;
+  }
+  .grid-card:nth-child(3) {
+    grid-area: card2 !important;
+  }
+  .grid-card:nth-child(4) {
+    grid-area: card3 !important;
+  }
+  .grid-card:nth-child(5) {
+    grid-area: card4 !important;
+  }
+
   /* Đảm bảo các card không tự động xuống dòng */
   .grid-card {
     min-width: 0; /* Cho phép card co lại */

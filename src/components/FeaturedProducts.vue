@@ -408,6 +408,9 @@ export default {
   .collection-title {
     font-size: 1.8rem;
   }
+  .product-card {
+    height: 100%;
+  }
 
   .category-filter {
     gap: 10px;

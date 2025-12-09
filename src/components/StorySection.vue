@@ -5,11 +5,11 @@
       <div class="story-header" ref="headerRef">
         <h1 class="story-title">CHUYỆN "NHÀ"</h1>
         <p class="story-description">
-          The Coffee House tin rằng, nụ cười là hương vị ngọt ngào nhất
-          trong mỗi tách cà phê. Từ những ly cà phê đậm đà, những tách trà
-          thanh mát, đến từng lời chào thân quen, chúng tôi mong mỗi vị
-          khách khi ghé Nhà đều mang theo một niềm vui nhỏ – để rồi nụ
-          cười ấy lại được lan toả khắp nơi.
+          The Coffee House tin rằng, nụ cười là hương vị ngọt ngào nhất trong
+          mỗi tách cà phê. Từ những ly cà phê đậm đà, những tách trà thanh mát,
+          đến từng lời chào thân quen, chúng tôi mong mỗi vị khách khi ghé Nhà
+          đều mang theo một niềm vui nhỏ – để rồi nụ cười ấy lại được lan toả
+          khắp nơi.
         </p>
         <button class="learn-more-btn">TÌM HIỂU</button>
       </div>
@@ -18,8 +18,8 @@
       <div class="images-grid">
         <!-- Top Left - Coffee cups -->
         <div class="image-card card-1" ref="card1Ref">
-          <img 
-            src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop" 
+          <img
+            src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop"
             alt="Coffee cups"
           />
           <div class="card-label">
@@ -30,8 +30,8 @@
 
         <!-- Center - People enjoying coffee -->
         <div class="image-card card-2" ref="card2Ref">
-          <img 
-            src="https://file.hstatic.net/1000075078/file/banner-home-aboutus.png" 
+          <img
+            src="https://file.hstatic.net/1000075078/file/banner-home-aboutus.png"
             alt="People at coffee shop"
           />
           <span class="hashtag">#chuyệnnhà</span>
@@ -39,16 +39,16 @@
 
         <!-- Bottom Left - Matcha -->
         <div class="image-card card-3" ref="card3Ref">
-          <img 
-            src="https://file.hstatic.net/1000075078/file/aboutus-banner3.png" 
+          <img
+            src="https://file.hstatic.net/1000075078/file/aboutus-banner3.png"
             alt="Matcha drink"
           />
         </div>
 
         <!-- Bottom Center - Coffee beans bag -->
         <div class="image-card card-4" ref="card4Ref">
-          <img 
-            src="https://file.hstatic.net/1000075078/file/sticker-aboutus-rectangle_15.png" 
+          <img
+            src="https://file.hstatic.net/1000075078/file/sticker-aboutus-rectangle_15.png"
             alt="Coffee beans"
           />
           <div class="badge-label">DZUIZE</div>
@@ -56,8 +56,8 @@
 
         <!-- Right - Coffee beans in hands -->
         <div class="image-card card-5" ref="card5Ref">
-          <img 
-            src="https://file.hstatic.net/1000075078/file/aboutus-banner1.png" 
+          <img
+            src="https://file.hstatic.net/1000075078/file/aboutus-banner1.png"
             alt="Coffee beans"
           />
           <div class="card-label-right">
@@ -71,14 +71,14 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ref, onMounted } from "vue";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default {
-  name: 'StorySection',
+  name: "StorySection",
   setup() {
     const headerRef = ref(null);
     const card1Ref = ref(null);
@@ -92,51 +92,57 @@ export default {
       gsap.from(headerRef.value, {
         scrollTrigger: {
           trigger: headerRef.value,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          toggleActions: 'play none none reverse'
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
         },
         opacity: 0,
         y: 50,
         duration: 1,
-        ease: 'power3.out'
+        ease: "power3.out",
       });
 
       // Card animations with stagger
-      const cards = [card1Ref.value, card2Ref.value, card3Ref.value, card4Ref.value, card5Ref.value];
-      
+      const cards = [
+        card1Ref.value,
+        card2Ref.value,
+        card3Ref.value,
+        card4Ref.value,
+        card5Ref.value,
+      ];
+
       cards.forEach((card, index) => {
         gsap.from(card, {
           scrollTrigger: {
             trigger: card,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none reverse'
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse",
           },
           opacity: 0,
           y: 100,
           rotation: index % 2 === 0 ? -5 : 5,
           duration: 1,
           delay: index * 0.1,
-          ease: 'power3.out'
+          ease: "power3.out",
         });
 
         // Hover animation
-        card.addEventListener('mouseenter', () => {
+        card.addEventListener("mouseenter", () => {
           gsap.to(card, {
             scale: 1.05,
             rotation: 0,
             duration: 0.3,
-            ease: 'power2.out'
+            ease: "power2.out",
           });
         });
 
-        card.addEventListener('mouseleave', () => {
+        card.addEventListener("mouseleave", () => {
           gsap.to(card, {
             scale: 1,
             rotation: index % 2 === 0 ? -2 : 2,
             duration: 0.3,
-            ease: 'power2.out'
+            ease: "power2.out",
           });
         });
       });
@@ -148,9 +154,9 @@ export default {
       card2Ref,
       card3Ref,
       card4Ref,
-      card5Ref
+      card5Ref,
     };
-  }
+  },
 };
 </script>
 
@@ -236,14 +242,14 @@ export default {
 }
 
 .image-card:hover img {
-  transform: scale(1);}
+  transform: scale(1);
+}
 
 /* Card positions */
 .card-1 {
   grid-column: 1 / 5;
   grid-row: 1 / 2;
   transform: rotate(-2deg);
-
 }
 
 .card-2 {
@@ -337,7 +343,7 @@ export default {
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%) rotate(-5deg);
-  background: #FFD700;
+  background: #ffd700;
   color: #000;
   padding: 8px 24px;
   border-radius: 20px;
