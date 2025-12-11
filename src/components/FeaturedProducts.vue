@@ -291,7 +291,7 @@ export default {
   height: 100%;
   object-fit: contain;
   transition: transform 0.3s ease;
-  margin: 60px 0;
+  margin: 50px 0;
 }
 
 .product-card:hover .product-image img {
@@ -408,8 +408,9 @@ export default {
   .collection-title {
     font-size: 1.8rem;
   }
-  .product-card {
-    height: 100%;
+
+  .featured-container {
+    padding: 40px 20px;
   }
 
   .category-filter {

@@ -5,7 +5,7 @@
     :breakpoints="{
       320: { slidesPerView: 2, spaceBetween: 10 },
       768: { slidesPerView: 5, spaceBetween: 20 },
-      1024: { slidesPerView: 6, spaceBetween: 25 }
+      1024: { slidesPerView: 6, spaceBetween: 25 },
     }"
     :modules="modules"
     class="mySwiper"
@@ -25,11 +25,11 @@
 </template>
 
 <script>
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { useRouter } from 'vue-router';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { useRouter } from "vue-router";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Pagination } from "swiper/modules";
 
 export default {
   components: {
@@ -39,17 +39,19 @@ export default {
   props: {
     products: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   setup() {
     const router = useRouter();
 
     const formatPrice = (price) => {
-      return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-      }).format(price).replace('₫', 'đ');
+      return new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })
+        .format(price)
+        .replace("₫", "đ");
     };
 
     const navigateToProduct = (productId) => {
@@ -59,7 +61,7 @@ export default {
     return {
       modules: [Pagination],
       formatPrice,
-      navigateToProduct
+      navigateToProduct,
     };
   },
 };
@@ -69,7 +71,9 @@ export default {
 <style scoped>
 .mySwiper {
   padding: 10px 5px;
-
+}
+.swiper-slide {
+  height: 50%;
 }
 
 .slide-product-card {

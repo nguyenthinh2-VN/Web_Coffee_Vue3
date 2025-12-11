@@ -769,11 +769,6 @@ export default {
     font-size: 16px;
   }
 
-  .related-products {
-    padding-top: 24px;
-    margin-bottom: 32px;
-  }
-
   .related-products h2 {
     font-size: 20px;
     margin-bottom: 20px;

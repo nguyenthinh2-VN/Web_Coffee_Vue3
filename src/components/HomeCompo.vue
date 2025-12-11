@@ -132,13 +132,29 @@ export default {
 
         const response = await axios.get(getApiUrl(API_ENDPOINTS.PRODUCTS));
 
-        // Chỉ lấy 4 phần tử đầu tiên - API trả về data.data.data
-        products.value = response.data.data.data.slice(0, 4);
+        console.log("API Response:", response.data);
+
+        // Handle different response structures
+        let productData = [];
+        if (response.data?.data?.data) {
+          // Structure: { data: { data: [...] } }
+          productData = response.data.data.data;
+        } else if (response.data?.data) {
+          // Structure: { data: [...] }
+          productData = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          // Structure: [...]
+          productData = response.data;
+        }
+
+        // Chỉ lấy 4 phần tử đầu tiên
+        products.value = productData.slice(0, 4);
 
         console.log("Fetched products:", products.value);
       } catch (err) {
         error.value = "Không thể tải sản phẩm. Vui lòng thử lại.";
         console.error("Error fetching products:", err);
+        console.error("Error details:", err.response?.data);
       } finally {
         loading.value = false;
       }

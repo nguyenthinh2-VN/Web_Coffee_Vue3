@@ -2,45 +2,53 @@
 <template>
   <n-message-provider>
     <div class="app">
-      <HeaderCompo />
+      <HeaderCompo v-if="!isIntroPage" />
       <main>
-        <router-view/>
+        <router-view />
         <CartModal />
       </main>
-      <FooterCompo />
+      <FooterCompo v-if="!isIntroPage" />
     </div>
   </n-message-provider>
 </template>
 
 <script>
-import { onMounted } from 'vue'
-import HeaderCompo from '@/components/HeaderCompo.vue'
-import FooterCompo from '@/components/FooterCompo.vue'
-import CartModal from '@/components/CartModal.vue'
-import { NMessageProvider } from 'naive-ui'
-import { useAuthStore } from '@/stores/authStore'
+import { onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+import HeaderCompo from "@/components/HeaderCompo.vue";
+import FooterCompo from "@/components/FooterCompo.vue";
+import CartModal from "@/components/CartModal.vue";
+import { NMessageProvider } from "naive-ui";
+import { useAuthStore } from "@/stores/authStore";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     HeaderCompo,
     FooterCompo,
     CartModal,
-    NMessageProvider
+    NMessageProvider,
   },
   setup() {
-    const authStore = useAuthStore()
-    
+    const authStore = useAuthStore();
+    const route = useRoute();
+
+    // Check if current route is intro page
+    const isIntroPage = computed(() => route.name === "Intro");
+
     // Khởi tạo auth state từ localStorage khi app load
     onMounted(() => {
-      authStore.initializeAuth()
-    })
-  }
-}
+      authStore.initializeAuth();
+    });
+
+    return {
+      isIntroPage,
+    };
+  },
+};
 </script>
 
 <style>
-
 body {
   background-color: #fff; /* Set global background to white */
   margin: 0; /* Remove default body margin */
@@ -60,6 +68,4 @@ body {
 main {
   flex: 1; /* Allow main content to grow and fill available space */
 }
-
-
 </style>
