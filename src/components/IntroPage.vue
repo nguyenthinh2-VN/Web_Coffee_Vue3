@@ -64,6 +64,8 @@ export default {
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap");
+
 .intro-page {
   min-height: 100vh;
   display: flex;
@@ -98,7 +100,7 @@ export default {
   gap: 1.5rem;
   justify-content: center;
   flex-wrap: wrap;
-  font-family: "HelveticaNeue-Light", "HelveticaNeue", Helvetica, "Roboto-Thin",
+  font-family: "Playfair Display", "HelveticaNeue", Helvetica, "Roboto-Thin",
     Arial, sans-serif-light;
   letter-spacing: 0.05em;
 }
